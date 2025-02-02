@@ -54,12 +54,19 @@ const BanglesBraceletsPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: "bangles-bracelets" },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`);
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -129,7 +136,7 @@ const BanglesBraceletsPage = () => {
       ) : (
         bannerData && (
           <Category_Banner
-            bannerData={bannerData[3]}
+            bannerData={bannerData[0]}
             breadcrumbs={breadcrumbs}
           />
         )

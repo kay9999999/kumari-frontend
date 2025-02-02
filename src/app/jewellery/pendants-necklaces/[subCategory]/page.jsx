@@ -15,23 +15,6 @@ const SubCategoryPage = () => {
   const params = useParams();
   const subCategory = params.subCategory; // Dynamically set the sub-category from URL
 
-  // Define banner index mapping
-  const bannerIndexMap = {
-    "statement-pendant": 27,
-    "spiritual-pendant": 28,
-    "spiritual-necklace": 29,
-    lariats: 30,
-    "necklace-mangalsutra": 31,
-    "fancy-mangalsutra": 32,
-    "light-weight-mangalsutra": 33,
-    "statement-necklace": 34,
-    charms: 35,
-    chains: 36,
-  };
-
-  // Get the appropriate banner index (fallback to 6 if not found)
-  const bannerIndex = bannerIndexMap[subCategory];
-
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -73,12 +56,19 @@ const SubCategoryPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: subCategory },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`);
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -129,7 +119,7 @@ const SubCategoryPage = () => {
     const formattedCategory = "pendants-necklaces"
       .replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());
-    const heading = bannerData?.[bannerIndex]?.heading || formattedStyle;
+    const heading = bannerData?.[0]?.heading || formattedStyle;
 
     const pathSegments = [
       { title: "Home", href: "/" },
@@ -152,7 +142,7 @@ const SubCategoryPage = () => {
       ) : (
         bannerData && (
           <Category_Banner
-            bannerData={bannerData[bannerIndex]}
+            bannerData={bannerData[0]}
             breadcrumbs={breadcrumbs}
           />
         )

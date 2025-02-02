@@ -54,12 +54,19 @@ const PendantsNecklacesPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: "pendants-necklaces" },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`);
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -129,7 +136,7 @@ const PendantsNecklacesPage = () => {
       ) : (
         bannerData && (
           <Category_Banner
-            bannerData={bannerData[2]}
+            bannerData={bannerData[0]}
             breadcrumbs={breadcrumbs}
           />
         )

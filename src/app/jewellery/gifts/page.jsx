@@ -54,12 +54,19 @@ const GiftsPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: "gifts" },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`);
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -127,7 +134,7 @@ const GiftsPage = () => {
       ) : (
         bannerData && (
           <Category_Banner
-            bannerData={bannerData[5]}
+            bannerData={bannerData[0]}
             breadcrumbs={breadcrumbs}
           />
         )

@@ -54,12 +54,19 @@ const RingsPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: category },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`);
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -104,15 +111,16 @@ const RingsPage = () => {
 
   // Generate breadcrumbs based on the URL
   const generateBreadcrumbs = () => {
-    const pathSegments = ["home", "jewellery", "rings"];
-    return pathSegments.map((segment, index) => {
-      const href =
-        segment === "home"
-          ? "/"
-          : `/${pathSegments.slice(1, index + 1).join("/")}`;
-      const title = segment.charAt(0).toUpperCase() + segment.slice(1); // Capitalize first letter
-      return { title, href };
-    });
+    const formattedCategory = category
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
+    const pathSegments = [
+      { title: "Home", href: "/" },
+      { title: "Jewellery", href: "/jewellery" },
+      { title: formattedCategory, href: `/jewellery/${category}` },
+    ];
+    return pathSegments;
   };
 
   const breadcrumbs = generateBreadcrumbs();
