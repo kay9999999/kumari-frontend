@@ -39,6 +39,10 @@ const ProductPage = () => {
   const [metalColorSelected, setmetalColorSelected] = useState("Yellow");
   const [diamondQualitySelected, setDiamondQualitySelected] = useState("SI");
 
+  // Local state for selected size and dropdown open/closed state
+  const [sizeSelected, setSizeSelected] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   useEffect(() => {
     const handleResize = () => {
       setSwiperKey((prevKey) => prevKey + 1);
@@ -63,7 +67,9 @@ const ProductPage = () => {
           fields: ["name", "slug"],
         },
         filter_values: { fields: ["value"] },
+        available_sizes: { populate: "*" },
       },
+
       filters: {
         slug: productSlug, // Filter by slug field
       },
@@ -79,8 +85,30 @@ const ProductPage = () => {
 
   const product = productsData || [];
   const mainProduct = Array.isArray(product) ? product[0] : product;
-  if (!mainProduct) return null;
 
+  // Extract available_sizes from product (which is an array of one object)
+  const availableSizesData =
+    mainProduct?.available_sizes &&
+    Array.isArray(mainProduct.available_sizes) &&
+    mainProduct.available_sizes.length > 0
+      ? mainProduct.available_sizes[0]
+      : {};
+
+  const sizes = Array.isArray(availableSizesData?.size?.size)
+    ? availableSizesData?.size?.size
+    : [];
+
+  const defaultSize =
+    availableSizesData.default_size || (sizes.length > 0 ? sizes[0] : "");
+  const sizeGuideLabel = availableSizesData.size_guide_label || "Size Guide";
+  const sizeGuideLink = availableSizesData.size_guide_link || "/";
+
+  // Update selected size if default changes
+  useEffect(() => {
+    setSizeSelected(defaultSize);
+  }, [defaultSize]);
+
+  if (!mainProduct) return null;
   if (productsLoading) return <div>Loading...</div>;
   if (productsError) return <div>Error: {productsError.message}</div>;
 
@@ -89,7 +117,7 @@ const ProductPage = () => {
   const metalColorOrder = ["Rose", "White", "Yellow"];
   const diamondOrder = ["SI / IJ", "VS / GH", "VVS / EF"];
 
-  // Sort metal options (comparing in uppercase for consistency)
+  // metal
   const metalFilters = (
     mainProduct?.filter_values?.filter((filter) => {
       const value = filter.value?.toUpperCase();
@@ -101,7 +129,7 @@ const ProductPage = () => {
     return metalOrder.indexOf(aVal) - metalOrder.indexOf(bVal);
   });
 
-  // Sort metal color options (exact match, case-sensitive as needed)
+  // metal color
   const metalColorOptions = (
     mainProduct?.filter_values?.filter((filter) => {
       const val = filter.value;
@@ -111,8 +139,7 @@ const ProductPage = () => {
     return metalColorOrder.indexOf(a.value) - metalColorOrder.indexOf(b.value);
   });
 
-  // Sort diamond options (comparing in uppercase)
-  // If there are any subtle differences in spacing, you might consider trimming or normalizing further.
+  // diamondOptions
   const diamondOptions = (
     mainProduct?.filter_values?.filter((filter) => {
       const val = filter.value?.toUpperCase();
@@ -123,6 +150,12 @@ const ProductPage = () => {
     const bVal = b.value?.toUpperCase();
     return diamondOrder.indexOf(aVal) - diamondOrder.indexOf(bVal);
   });
+
+  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
+  const handleSizeSelect = (size) => {
+    setSizeSelected(size);
+    setDropdownOpen(false);
+  };
 
   return (
     <section className="w-full  pt-20">
@@ -264,10 +297,10 @@ const ProductPage = () => {
                 {metalFilters.map((filter) => (
                   <div
                     key={filter.id}
-                    className={`flex-grow  border hover:border-2 rounded p-4 cursor-pointer ${
+                    className={`flex-grow  border  rounded p-4 cursor-pointer ${
                       metalSelected === filter.value.toUpperCase()
                         ? "border-2 border-black"
-                        : "border-gray-300 "
+                        : " hover:outline hover:outline-gray-300 hover:outline-1"
                     }`}
                     onClick={() => setmetalSelected(filter.value.toUpperCase())}
                   >
@@ -296,10 +329,10 @@ const ProductPage = () => {
                   return (
                     <div
                       key={option.id}
-                      className={`flex-grow border hover:border-2 rounded p-2 cursor-pointer ${
+                      className={`flex-grow border  rounded p-2 cursor-pointer ${
                         metalColorSelected === colorValue
                           ? "border-2 border-black"
-                          : "border-gray-300"
+                          : " hover:outline hover:outline-gray-300 hover:outline-1"
                       }`}
                       onClick={() => setmetalColorSelected(colorValue)}
                     >
@@ -335,10 +368,10 @@ const ProductPage = () => {
                   return (
                     <div
                       key={option.id}
-                      className={`flex-grow border hover:border-2 rounded p-4 cursor-pointer ${
+                      className={`flex-grow border  rounded p-4 cursor-pointer ${
                         diamondQualitySelected === qualityValue
                           ? "border-2 border-black"
-                          : "border-gray-300"
+                          : " hover:outline hover:outline-gray-300 hover:outline-1"
                       }`}
                       onClick={() => setDiamondQualitySelected(qualityValue)}
                     >
@@ -346,6 +379,58 @@ const ProductPage = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            <div className="product-options mt-4">
+              {/* Header with dynamic size guide */}
+              <div className="flex items-center text-[#1A1A1A] space-x-1">
+                <span className=" mr-2">Size</span>
+                <Info className="w-3 h-3" />
+                <Link href={sizeGuideLink} className="hover:underline text-sm">
+                  <span>{sizeGuideLabel}</span>
+                </Link>
+              </div>
+
+              {/* Dropdown Toggle */}
+              <div className="relative mt-2">
+                <div
+                  className={`text-[#4D4D4D] text-sm flex justify-between items-center w-full text-center border rounded p-4 cursor-pointer ${
+                    dropdownOpen ? "border-gray-300" : "border-2 border-black"
+                  }`}
+                  onClick={toggleDropdown}
+                >
+                  <div className="flex flex-col text-center mx-auto">
+                    <span>{sizeSelected}</span>
+                  </div>
+                  {dropdownOpen ? (
+                    <ChevronUp className="ml-2" />
+                  ) : (
+                    <ChevronDown className="ml-2" />
+                  )}
+                </div>
+
+                {/* Dropdown List */}
+                {dropdownOpen && (
+                  <div className="text-[#404040] text-sm relative flex flex-wrap justify-around z-10 w-full bg-white mt-1">
+                    {sizes.map((size) => (
+                      <div
+                        key={size}
+                        className={`py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
+                          size === sizeSelected ? "border-2 border-black" : ""
+                        } ${
+                          // Adjust width as needed; here we use full width for the last item
+                          size === sizes[sizes.length - 1]
+                            ? "w-full"
+                            : "w-[23%] "
+                        }`}
+                        onClick={() => handleSizeSelect(size)}
+                      >
+                        <span>{size}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
