@@ -31,7 +31,7 @@ export const Navigation = ({
   ];
 
   return (
-    <nav id="nav-menu" className="hidden lg:flex gap-3 xl:gap-6 relative">
+    <nav id="nav-menu" className="hidden lg:flex gap-3 xl:gap-4 relative">
       {[
         "RINGS",
         "EARRINGS",
@@ -50,7 +50,7 @@ export const Navigation = ({
         >
           <Link
             href={links[index]}
-            className="font-secondary font-semibold text-xs xl:text-sm hover:text-primary"
+            className="font-secondary font-semibold text-[11px] xl:text-sm hover:text-primary"
           >
             <span className="relative">
               {item}
