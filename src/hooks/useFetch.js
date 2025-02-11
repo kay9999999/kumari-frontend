@@ -4,20 +4,38 @@ import { makeRequest } from "../makeRequest";
 const useFetch = (url) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!url) return;
+
+    let isMounted = true;
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
+
         const res = await makeRequest.get(url);
-        setData(res.data.data);
+
+        if (isMounted) {
+          setData(res.data.data);
+        }
       } catch (err) {
-        setError(true);
+        if (isMounted) {
+          setError(err.response?.data || "An error occurred");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     };
+
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [url]);
 
   return { data, loading, error };
