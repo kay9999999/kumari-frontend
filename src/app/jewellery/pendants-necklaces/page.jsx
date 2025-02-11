@@ -71,7 +71,14 @@ const PendantsNecklacesPage = () => {
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
     {
-      populate: "*",
+      populate: {
+        filter_values: { fields: ["value"] },
+        imageVariants: {
+          populate: {
+            image: { fields: ["url"] },
+          },
+        },
+      },
       filters: {
         categories: {
           name: {

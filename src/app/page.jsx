@@ -1,3 +1,4 @@
+import React from "react";
 import Hero from "@/components/custom/Homepage/Hero";
 import "./globals.css";
 import Usp from "@/components/custom/Homepage/Usp-block";

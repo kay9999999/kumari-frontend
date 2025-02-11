@@ -15,20 +15,6 @@ const SubCategoryPage = () => {
   const params = useParams();
   const subCategory = params.subCategory; // Dynamically set the sub-category from URL
 
-  // Define banner index mapping
-  const bannerIndexMap = {
-    "diamond-bangle": 41,
-    "flexi-bracelet": 42,
-    "chain-bracelet": 43,
-    "oval-bracelet": 44,
-    "tennis-bracelet": 45,
-    "mangalsutra-bracelet": 46,
-    "evil-eye-bracelet": 47,
-  };
-
-  // Get the appropriate banner index (fallback to 6 if not found)
-  const bannerIndex = bannerIndexMap[subCategory];
-
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -87,7 +73,14 @@ const SubCategoryPage = () => {
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
     {
-      populate: "*",
+      populate: {
+        filter_values: { fields: ["value"] },
+        imageVariants: {
+          populate: {
+            image: { fields: ["url"] },
+          },
+        },
+      },
       filters: {
         sub_categories: {
           name: subCategory, // Ensure only products of the current sub-category are fetched
