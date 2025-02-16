@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Head from "next/head";
 import useFetch from "../../../../hooks/useFetch"; // Assuming useFetch is your custom hook
 import Category_Banner from "../../../../components/custom/Category_Banner"; // Import the banner component
 import ProductCard from "../../../../components/custom/ProductCard";
@@ -15,20 +14,6 @@ const SubCategoryPage = () => {
 
   const params = useParams();
   const subCategory = params.subCategory; // Dynamically set the sub-category from URL
-
-  // Define banner index mapping
-  const bannerIndexMap = {
-    bali: 16,
-    "drops-danglers": 17,
-    "studs-tops": 18,
-    "statement-earrings": 19,
-    jhumkas: 20,
-    earcuff: 21,
-    "sui-dhaga": 22,
-  };
-
-  // Get the appropriate banner index (fallback to 6 if not found)
-  const bannerIndex = bannerIndexMap[subCategory];
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,12 +56,19 @@ const SubCategoryPage = () => {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Fetch Banner Data
+  // Fetch banner by slug
+  const bannerQuery = qs.stringify(
+    {
+      filters: { slug: subCategory },
+      populate: ["image"],
+    },
+    { encodeValuesOnly: true }
+  );
   const {
     data: bannerData,
     loading: bannerLoading,
     error: bannerError,
-  } = useFetch("/api/banners?populate[image][fields][0]=url"); // Make sure the correct API endpoint is used
+  } = useFetch(`/api/banners?${bannerQuery}`); // Make sure the correct API endpoint is used
 
   // Construct the products endpoint dynamically
   const productsEndpoint = qs.stringify(
@@ -134,7 +126,7 @@ const SubCategoryPage = () => {
     const formattedCategory = "earrings".replace(/\b\w/g, (char) =>
       char.toUpperCase()
     );
-    const heading = bannerData?.[bannerIndex]?.heading || formattedStyle;
+    const heading = bannerData?.[0]?.heading || formattedStyle;
 
     const pathSegments = [
       { title: "Home", href: "/" },
@@ -147,417 +139,348 @@ const SubCategoryPage = () => {
 
   const breadcrumbs = generateBreadcrumbs();
 
-  // Dynamic metadata state
-  const [pageMetadata, setPageMetadata] = useState({
-    title: "Loading...",
-    description: "Discover our exquisite jewellery collection",
-  });
-
-  useEffect(() => {
-    if (bannerData && bannerData[bannerIndex]) {
-      const metaTitle =
-        bannerData[bannerIndex]?.heading ||
-        subCategory.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-      const metaDescription =
-        bannerData[bannerIndex]?.description ||
-        `Explore our beautiful collection of ${metaTitle.toLowerCase()}`;
-
-      // Update document title
-      document.title = `${metaTitle} | Shop with Kumari`;
-
-      // Update meta tags dynamically
-      const descriptionMeta = document.querySelector(
-        'meta[name="description"]'
-      );
-      if (descriptionMeta) {
-        descriptionMeta.setAttribute("content", metaDescription);
-      }
-
-      // Update Open Graph tags
-      const ogTitleMeta = document.querySelector('meta[property="og:title"]');
-      const ogDescriptionMeta = document.querySelector(
-        'meta[property="og:description"]'
-      );
-
-      if (ogTitleMeta) ogTitleMeta.setAttribute("content", metaTitle);
-      if (ogDescriptionMeta)
-        ogDescriptionMeta.setAttribute("content", metaDescription);
-
-      // Store in state for Head component
-      setPageMetadata({
-        title: metaTitle,
-        description: metaDescription,
-      });
-    }
-  }, [bannerData, bannerIndex, subCategory]);
-
   return (
-    <>
-      <Head>
-        <title>{pageMetadata.title} | Shop with Kumari </title>
-        <meta name="description" content={pageMetadata.description} />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={pageMetadata.title} />
-        <meta property="og:description" content={pageMetadata.description} />
-        <meta
-          property="og:image"
-          content={bannerData?.[bannerIndex]?.image?.url}
-        />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageMetadata.title} />
-        <meta name="twitter:description" content={pageMetadata.description} />
-        <meta
-          name="twitter:image"
-          content={bannerData?.[bannerIndex]?.image?.url}
-        />
-      </Head>
-
-      <div className="pt-3 mt-16">
-        {/* Banner Section */}
-        {bannerLoading ? (
-          <p>Loading banner...</p>
-        ) : bannerError ? (
-          <p>Error loading banner.</p>
-        ) : (
-          bannerData && (
-            <Category_Banner
-              bannerData={bannerData[bannerIndex]}
-              breadcrumbs={breadcrumbs}
-            />
-          )
-        )}
-
-        <div>
-          <FilterBar
-            onToggleSidebar={toggleSidebar}
-            isSidebarOpen={isSidebarOpen}
-            expandedFilter={expandedFilter}
-            setExpandedFilter={setExpandedFilter}
+    <div className="pt-3 mt-16">
+      {/* Banner Section */}
+      {bannerLoading ? (
+        <p>Loading banner...</p>
+      ) : bannerError ? (
+        <p>Error loading banner.</p>
+      ) : (
+        bannerData && (
+          <Category_Banner
+            bannerData={bannerData[0]}
+            breadcrumbs={breadcrumbs}
           />
+        )
+      )}
+
+      <div>
+        <FilterBar
+          onToggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+          expandedFilter={expandedFilter}
+          setExpandedFilter={setExpandedFilter}
+        />
+      </div>
+
+      <div className="flex">
+        {/* Filters pop-up*/}
+        <div className="md:hidden">
+          {/* Dimmed Background Overlay */}
+          <div
+            className={`fixed inset-0 bg-black bg-opacity-60 z-20 transition-opacity duration-300 ${
+              isSidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+            }`}
+            onClick={toggleSidebar} // Close sidebar when clicking on the dimmed area
+          ></div>
+
+          {/* Sidebar */}
+          <div
+            className={`fixed overflow-y-auto h-[500px] top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white shadow-lg z-30 p-8 rounded-lg ${
+              isSidebarOpen
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-90 pointer-events-none"
+            } transition-all duration-300`}
+          >
+            <button
+              className="absolute top-3 font-extrabold right-5 text-black"
+              onClick={toggleSidebar}
+            >
+              ✕ {/* Close icon */}
+            </button>
+
+            <div className="mt-8">
+              {/* Add ALL Filter Button */}
+              <div className="flex justify-center mb-6">
+                <button
+                  onClick={handleAllFilter}
+                  className={`py-1 px-4 border-2 rounded-md text-sm  ${
+                    selectedFilters.length === 0
+                      ? " text-[#333333] border-primary"
+                      : " text-[#333333] border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  All
+                </button>
+              </div>
+
+              {/* Display Selected Filters */}
+              {selectedFilters.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-medium text-[#333333] mb-2">
+                    Selected Filters:
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedFilters.map((filter, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-full text-xs"
+                      >
+                        <span>{filter}</span>
+                        <button
+                          onClick={() => handleFilterChange(filter)}
+                          className=" pl-1 text-xs text-white hover:text-red-400"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="border-b border-gray-200 mb-3"></div>
+
+              {filtersLoading ? (
+                <p>Loading filters...</p>
+              ) : filtersError ? (
+                <p>Error loading filters.</p>
+              ) : (
+                filters
+                  ?.filter((filter) => {
+                    // Ensure the filter is associated with the selected categories
+                    return filter.sub_categories.some((cat) =>
+                      subCategory.includes(cat.name.toLowerCase())
+                    );
+                  })
+                  .map((filter, index, arr) => (
+                    <div
+                      key={filter.id}
+                      className={`mb-5 relative ${
+                        index !== arr.length - 1
+                          ? "pb-3 border-b border-gray-200"
+                          : ""
+                      }`}
+                    >
+                      {/* Expandable Filter Section */}
+                      <div className="flex items-center justify-between text-[#333333] hover:text-primary">
+                        <h3 className="font-medium">{filter.filter_group}</h3>
+                        <button
+                          className={`flex items-center justify-center w-6 h-6 text-xl  text-gray-500 hover:text-primary transition-transform duration-500 ${
+                            expandedFilter === filter.id
+                              ? "rotate-90"
+                              : "rotate-0"
+                          }`}
+                          onClick={() =>
+                            setExpandedFilter((prev) =>
+                              prev === filter.id ? null : filter.id
+                            )
+                          }
+                        >
+                          <span
+                            className={`block transition-all duration-500 ${
+                              expandedFilter === filter.id
+                                ? "rotate-45"
+                                : "rotate-0"
+                            }`}
+                          >
+                            +
+                          </span>
+                        </button>
+                      </div>
+
+                      {/* Dropdown Options */}
+                      {expandedFilter === filter.id && (
+                        <div className="flex flex-col gap-2 mt-2">
+                          {filter.filter_values
+                            ?.filter((filter) => {
+                              // Ensure the filter value is related to the selected categories
+                              return filter.sub_categories.some((cat) =>
+                                subCategory.includes(cat.name.toLowerCase())
+                              );
+                            })
+                            ?.map((value) => (
+                              <label
+                                key={value.id}
+                                className="flex items-center gap-2 text-customGray text-sm hover:text-primary"
+                              >
+                                <input
+                                  type="checkbox"
+                                  value={value.value}
+                                  checked={selectedFilters.includes(
+                                    value.value
+                                  )}
+                                  onChange={() =>
+                                    handleFilterChange(value.value)
+                                  }
+                                  className="form-checkbox h-3 w-3 text-blue-600 border-gray-300 rounded"
+                                />
+                                <span>{value.value}</span>
+                              </label>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="flex">
-          {/* Filters pop-up*/}
-          <div className="md:hidden">
-            {/* Dimmed Background Overlay */}
-            <div
-              className={`fixed inset-0 bg-black bg-opacity-60 z-20 transition-opacity duration-300 ${
-                isSidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
-              }`}
-              onClick={toggleSidebar} // Close sidebar when clicking on the dimmed area
-            ></div>
-
-            {/* Sidebar */}
-            <div
-              className={`fixed overflow-y-auto h-[500px] top-[55%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white shadow-lg z-30 p-8 rounded-lg ${
-                isSidebarOpen
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90 pointer-events-none"
-              } transition-all duration-300`}
-            >
-              <button
-                className="absolute top-3 font-extrabold right-5 text-black"
-                onClick={toggleSidebar}
-              >
-                ✕ {/* Close icon */}
-              </button>
-
-              <div className="mt-8">
-                {/* Add ALL Filter Button */}
-                <div className="flex justify-center mb-6">
-                  <button
-                    onClick={handleAllFilter}
-                    className={`py-1 px-4 border-2 rounded-md text-sm  ${
-                      selectedFilters.length === 0
-                        ? " text-[#333333] border-primary"
-                        : " text-[#333333] border-gray-300 hover:bg-gray-100"
-                    }`}
-                  >
-                    All
-                  </button>
-                </div>
-
-                {/* Display Selected Filters */}
-                {selectedFilters.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="font-medium text-[#333333] mb-2">
-                      Selected Filters:
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedFilters.map((filter, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-full text-xs"
-                        >
-                          <span>{filter}</span>
-                          <button
-                            onClick={() => handleFilterChange(filter)}
-                            className=" pl-1 text-xs text-white hover:text-red-400"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="border-b border-gray-200 mb-3"></div>
-
-                {filtersLoading ? (
-                  <p>Loading filters...</p>
-                ) : filtersError ? (
-                  <p>Error loading filters.</p>
-                ) : (
-                  filters
-                    ?.filter((filter) => {
-                      // Ensure the filter is associated with the selected categories
-                      return filter.sub_categories.some((cat) =>
-                        subCategory.includes(cat.name.toLowerCase())
-                      );
-                    })
-                    .map((filter, index, arr) => (
-                      <div
-                        key={filter.id}
-                        className={`mb-5 relative ${
-                          index !== arr.length - 1
-                            ? "pb-3 border-b border-gray-200"
-                            : ""
-                        }`}
-                      >
-                        {/* Expandable Filter Section */}
-                        <div className="flex items-center justify-between text-[#333333] hover:text-primary">
-                          <h3 className="font-medium">{filter.filter_group}</h3>
-                          <button
-                            className={`flex items-center justify-center w-6 h-6 text-xl  text-gray-500 hover:text-primary transition-transform duration-500 ${
-                              expandedFilter === filter.id
-                                ? "rotate-90"
-                                : "rotate-0"
-                            }`}
-                            onClick={() =>
-                              setExpandedFilter((prev) =>
-                                prev === filter.id ? null : filter.id
-                              )
-                            }
-                          >
-                            <span
-                              className={`block transition-all duration-500 ${
-                                expandedFilter === filter.id
-                                  ? "rotate-45"
-                                  : "rotate-0"
-                              }`}
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-
-                        {/* Dropdown Options */}
-                        {expandedFilter === filter.id && (
-                          <div className="flex flex-col gap-2 mt-2">
-                            {filter.filter_values
-                              ?.filter((filter) => {
-                                // Ensure the filter value is related to the selected categories
-                                return filter.sub_categories.some((cat) =>
-                                  subCategory.includes(cat.name.toLowerCase())
-                                );
-                              })
-                              ?.map((value) => (
-                                <label
-                                  key={value.id}
-                                  className="flex items-center gap-2 text-customGray text-sm hover:text-primary"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    value={value.value}
-                                    checked={selectedFilters.includes(
-                                      value.value
-                                    )}
-                                    onChange={() =>
-                                      handleFilterChange(value.value)
-                                    }
-                                    className="form-checkbox h-3 w-3 text-blue-600 border-gray-300 rounded"
-                                  />
-                                  <span>{value.value}</span>
-                                </label>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Filters Sidebar */}
+        {/* Filters Sidebar */}
+        <div
+          className={`h-full hidden md:block transition-all duration-300  ${
+            isSidebarOpen ? "w-60" : "w-0"
+          }`}
+        >
           <div
-            className={`h-full hidden md:block transition-all duration-300  ${
-              isSidebarOpen ? "w-60" : "w-0"
-            }`}
+            className={`  max-w-full p-6  overflow-hidden transition-transform duration-300 ${
+              isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }  `}
           >
-            <div
-              className={`  max-w-full p-6  overflow-hidden transition-transform duration-300 ${
-                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }  `}
-            >
-              <div className="mt-2">
-                {/* Add ALL Filter Button */}
-                <div className="w-full mb-6 bg-slate-50 rounded-md">
-                  <button
-                    onClick={handleAllFilter}
-                    className={`py-1.5 pl-2 pr-[162px] border-2 rounded-md text-base ${
-                      selectedFilters.length === 0
-                        ? "text-[#333333] border-primary"
-                        : "text-[#333333] border-gray-300 hover:bg-gray-100"
-                    }`}
-                  >
-                    All
-                  </button>
-                </div>
+            <div className="mt-2">
+              {/* Add ALL Filter Button */}
+              <div className="w-full mb-6 bg-slate-50 rounded-md">
+                <button
+                  onClick={handleAllFilter}
+                  className={`py-1.5 pl-2 pr-[162px] border-2 rounded-md text-base ${
+                    selectedFilters.length === 0
+                      ? "text-[#333333] border-primary"
+                      : "text-[#333333] border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  All
+                </button>
+              </div>
 
-                {/* Display Selected Filters */}
-                {selectedFilters.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="font-medium text-[#333333] mb-2">
-                      Selected Filters:
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedFilters.map((filter, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-full text-xs"
-                        >
-                          <span>{filter}</span>
-                          <button
-                            onClick={() => handleFilterChange(filter)}
-                            className=" pl-1 text-xs text-white hover:text-red-400"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="border-b border-gray-200 mb-3"></div>
-
-                {filtersLoading ? (
-                  <p>Loading filters...</p>
-                ) : filtersError ? (
-                  <p>Error loading filters.</p>
-                ) : (
-                  filters
-                    ?.filter((filter) => {
-                      // Ensure the filter is associated with the selected categories
-                      return filter.sub_categories.some((cat) =>
-                        subCategory.includes(cat.name.toLowerCase())
-                      );
-                    })
-                    .map((filter, index, arr) => (
+              {/* Display Selected Filters */}
+              {selectedFilters.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-medium text-[#333333] mb-2">
+                    Selected Filters:
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedFilters.map((filter, index) => (
                       <div
-                        key={filter.id}
-                        className={`mb-5 relative ${
-                          index !== arr.length - 1
-                            ? "pb-3 border-b border-gray-200"
-                            : ""
-                        }`}
+                        key={index}
+                        className="flex items-center gap-1 bg-primary text-white px-3 py-1 rounded-full text-xs"
                       >
-                        {/* Expandable Filter Section */}
-                        <div className="flex items-center justify-between text-[#333333] hover:text-primary">
-                          <h3 className="font-medium">{filter.filter_group}</h3>
-                          <button
-                            className={`flex items-center justify-center w-6 h-6 text-xl text-gray-500 hover:text-primary transition-transform duration-500 ${
+                        <span>{filter}</span>
+                        <button
+                          onClick={() => handleFilterChange(filter)}
+                          className=" pl-1 text-xs text-white hover:text-red-400"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="border-b border-gray-200 mb-3"></div>
+
+              {filtersLoading ? (
+                <p>Loading filters...</p>
+              ) : filtersError ? (
+                <p>Error loading filters.</p>
+              ) : (
+                filters
+                  ?.filter((filter) => {
+                    // Ensure the filter is associated with the selected categories
+                    return filter.sub_categories.some((cat) =>
+                      subCategory.includes(cat.name.toLowerCase())
+                    );
+                  })
+                  .map((filter, index, arr) => (
+                    <div
+                      key={filter.id}
+                      className={`mb-5 relative ${
+                        index !== arr.length - 1
+                          ? "pb-3 border-b border-gray-200"
+                          : ""
+                      }`}
+                    >
+                      {/* Expandable Filter Section */}
+                      <div className="flex items-center justify-between text-[#333333] hover:text-primary">
+                        <h3 className="font-medium">{filter.filter_group}</h3>
+                        <button
+                          className={`flex items-center justify-center w-6 h-6 text-xl text-gray-500 hover:text-primary transition-transform duration-500 ${
+                            expandedFilter === filter.id
+                              ? "rotate-90"
+                              : "rotate-0"
+                          }`}
+                          onClick={() =>
+                            setExpandedFilter((prev) =>
+                              prev === filter.id ? null : filter.id
+                            )
+                          }
+                        >
+                          <span
+                            className={`block transition-all duration-500 ${
                               expandedFilter === filter.id
-                                ? "rotate-90"
+                                ? "rotate-45"
                                 : "rotate-0"
                             }`}
-                            onClick={() =>
-                              setExpandedFilter((prev) =>
-                                prev === filter.id ? null : filter.id
-                              )
-                            }
                           >
-                            <span
-                              className={`block transition-all duration-500 ${
-                                expandedFilter === filter.id
-                                  ? "rotate-45"
-                                  : "rotate-0"
-                              }`}
-                            >
-                              +
-                            </span>
-                          </button>
-                        </div>
-
-                        {/* Dropdown Options */}
-                        {expandedFilter === filter.id && (
-                          <div className="flex flex-col gap-2 mt-2">
-                            {filter.filter_values
-                              ?.filter((filter) => {
-                                // Ensure the filter is associated with the selected categories
-                                return filter.sub_categories.some((cat) =>
-                                  subCategory.includes(cat.name.toLowerCase())
-                                );
-                              })
-                              ?.map((value) => (
-                                <label
-                                  key={value.id}
-                                  className="flex items-center gap-2 text-customGray text-sm hover:text-primary"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    value={value.value}
-                                    checked={selectedFilters.includes(
-                                      value.value
-                                    )}
-                                    onChange={() =>
-                                      handleFilterChange(value.value)
-                                    }
-                                    className="form-checkbox h-3 w-3 text-blue-600 border-gray-300 rounded"
-                                  />
-                                  <span>{value.value}</span>
-                                </label>
-                              ))}
-                          </div>
-                        )}
+                            +
+                          </span>
+                        </button>
                       </div>
-                    ))
-                )}
-              </div>
+
+                      {/* Dropdown Options */}
+                      {expandedFilter === filter.id && (
+                        <div className="flex flex-col gap-2 mt-2">
+                          {filter.filter_values
+                            ?.filter((filter) => {
+                              // Ensure the filter is associated with the selected categories
+                              return filter.sub_categories.some((cat) =>
+                                subCategory.includes(cat.name.toLowerCase())
+                              );
+                            })
+                            ?.map((value) => (
+                              <label
+                                key={value.id}
+                                className="flex items-center gap-2 text-customGray text-sm hover:text-primary"
+                              >
+                                <input
+                                  type="checkbox"
+                                  value={value.value}
+                                  checked={selectedFilters.includes(
+                                    value.value
+                                  )}
+                                  onChange={() =>
+                                    handleFilterChange(value.value)
+                                  }
+                                  className="form-checkbox h-3 w-3 text-blue-600 border-gray-300 rounded"
+                                />
+                                <span>{value.value}</span>
+                              </label>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Products */}
-          <div className={`flex-1 transition-all duration-300`}>
-            {productsLoading ? (
-              <p>Loading products...</p>
-            ) : productsError ? (
-              <p>Error loading products. Check the console for more details.</p>
-            ) : products?.length > 0 ? (
-              <div
-                className={`grid gap-4 p-4 ${
-                  isSidebarOpen
-                    ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-                    : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                }`}
-              >
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            ) : (
-              <p>No products found for the selected filter(s).</p>
-            )}
-          </div>
+        {/* Products */}
+        <div className={`flex-1 transition-all duration-300`}>
+          {productsLoading ? (
+            <p>Loading products...</p>
+          ) : productsError ? (
+            <p>Error loading products. Check the console for more details.</p>
+          ) : products?.length > 0 ? (
+            <div
+              className={`grid gap-4 p-4 ${
+                isSidebarOpen
+                  ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+                  : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              }`}
+            >
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p>No products found for the selected filter(s).</p>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

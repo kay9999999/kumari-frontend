@@ -13,19 +13,25 @@ import Guide from "@/components/custom/Homepage/Guide";
 import Home_Product from "@/components/custom/Homepage/Home_Product";
 
 export default async function Home() {
-  const response = await getHomePageData();
-  return (
-    <div>
-      <Hero response={response} />
-      <Usp response={response} />
-      <Categories response={response} />
-      <Hero_mid response={response} />
-      <Store response={response} />
-      <Slider response={response} />
-      <Policy response={response} />
-      <Home_Product response={response} />
-      <Story response={response} />
-      <Guide response={response} />
-    </div>
-  );
+  try {
+    const response = await getHomePageData();
+
+    return (
+      <div>
+        <Hero response={response} />
+        <Usp response={response} />
+        <Categories response={response} />
+        <Hero_mid response={response} />
+        <Store response={response} />
+        <Slider response={response} />
+        <Policy response={response} />
+        <Home_Product response={response} />
+        <Story response={response} />
+        <Guide response={response} />
+      </div>
+    );
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    return <div>Error: Failed to load data.</div>;
+  }
 }

@@ -6,7 +6,7 @@ const Store = ({ response }) => {
   const storeImages = response?.data?.store || [];
 
   return (
-    <div className="w-full h-full mt-8 mb-8">
+    <div className="w-full h-full mt-16 mb-8">
       <a href="#">
         {/* Image for smaller screens */}
         {storeImages.length > 0 && (

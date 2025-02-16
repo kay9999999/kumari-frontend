@@ -1,4 +1,4 @@
-import qs from "qs";
+import qs, { stringify } from "qs";
 import { getStrapiURL } from "@/lib/utils";
 
 const baseUrl = getStrapiURL();
@@ -117,5 +117,21 @@ export async function getGlobalPageData() {
     ],
   });
 
+  return await fetchData(url.href);
+}
+
+export async function getProductPageData() {
+  const url = new URL("/api/product-page", baseUrl);
+  url.search = qs.stringify({
+    populate: {
+      video: { fields: ["url"] },
+      image: { fields: ["url"] },
+      feed: {
+        populate: {
+          image: { fields: ["url"] },
+        },
+      },
+    },
+  });
   return await fetchData(url.href);
 }

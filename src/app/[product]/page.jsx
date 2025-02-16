@@ -13,7 +13,10 @@ import Breadcrumbs from "@/components/custom/Breadcrumbs";
 import Link from "next/link";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import { TbMailHeart } from "react-icons/tb";
+import RelatedProducts from "@/components/ui/RelatedProducts";
 import ReadMoreButton from "@/components/ui/ReadMoreButton";
+import Story from "@/components/custom/Homepage/Story";
+
 import {
   Info,
   ChevronDown,
@@ -25,19 +28,17 @@ import {
   Share2,
   Weight,
   Gem,
-  Truck,
-  RefreshCcw,
-  NotepadText,
-  ShieldCheck,
   Sparkle,
   LoaderCircle,
   Circle,
 } from "lucide-react";
+import { getProductPageData } from "@/data/loader";
 
 const ProductPage = () => {
   const params = useParams();
   const productSlug = params.product;
   const URL = getStrapiURL();
+  const [productData, setProductData] = useState(null);
   const [swiperKey, setSwiperKey] = useState(0);
   const [metalSelected, setmetalSelected] = useState("");
   const [metalColorSelected, setmetalColorSelected] = useState("");
@@ -63,6 +64,14 @@ const ProductPage = () => {
     };
 
     window.addEventListener("resize", handleResize);
+
+    const fetchData = async () => {
+      const response = await getProductPageData();
+      setProductData(response);
+    };
+
+    fetchData();
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -195,7 +204,6 @@ const ProductPage = () => {
       <div className="w-full pt-2 lg:pt-3 xl:pt-5 px-2 xl:px-0">
         <Breadcrumbs product={product} />
       </div>
-
       {/* images and details section */}
       <div className="flex flex-col lg:flex-row pt-2">
         {/* Product Images - Mobile Carousel */}
@@ -440,55 +448,65 @@ const ProductPage = () => {
             </div>
           </div>
           {/* {Size} */}
-          <div className="product-options mt-4">
-            {/* Header with dynamic size guide */}
-            <div className="flex items-center text-[#1A1A1A] space-x-1">
-              <span className=" mr-2">Size</span>
-              <Info className="w-3 h-3" />
-              <Link href={sizeGuideLink} className="hover:underline text-sm">
-                <span>{sizeGuideLabel}</span>
-              </Link>
-            </div>
-
-            {/* Dropdown Toggle */}
-            <div className="relative mt-2">
-              <div
-                className={`text-[#4D4D4D] text-sm flex justify-between items-center w-full text-center border rounded p-4 cursor-pointer ${
-                  dropdownOpen ? "border-gray-300" : "border-2 border-black"
-                }`}
-                onClick={toggleDropdown}
-              >
-                <div className="flex flex-col text-center mx-auto">
-                  <span>{sizeSelected}</span>
-                </div>
-                {dropdownOpen ? (
-                  <ChevronUp className="ml-2" />
-                ) : (
-                  <ChevronDown className="ml-2" />
+          {sizes?.length > 0 && (
+            <div className="product-options mt-4">
+              {/* Header with dynamic size guide */}
+              <div className="flex items-center text-[#1A1A1A] space-x-1">
+                <span className="mr-2">Size</span>
+                <Info className="w-3 h-3" />
+                {sizeGuideLink && (
+                  <Link
+                    href={sizeGuideLink}
+                    className="hover:underline text-sm"
+                  >
+                    <span>{sizeGuideLabel}</span>
+                  </Link>
                 )}
               </div>
 
-              {/* Dropdown List */}
-              {dropdownOpen && (
-                <div className="text-[#404040] text-sm relative flex flex-wrap justify-around z-10 w-full bg-white mt-1">
-                  {sizes.map((size) => (
-                    <div
-                      key={size}
-                      className={`py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
-                        size === sizeSelected ? "border-2 border-black" : ""
-                      } ${
-                        // Adjust width as needed; here we use full width for the last item
-                        size === sizes[sizes.length - 1] ? "w-full" : "w-[23%] "
-                      }`}
-                      onClick={() => handleSizeSelect(size)}
-                    >
-                      <span>{size}</span>
-                    </div>
-                  ))}
+              {/* Dropdown Toggle */}
+              <div className="relative mt-2">
+                <div
+                  className={`text-[#4D4D4D] text-sm flex justify-between items-center w-full text-center border rounded p-4 cursor-pointer ${
+                    dropdownOpen ? "border-gray-300" : "border-2 border-black"
+                  }`}
+                  onClick={toggleDropdown}
+                >
+                  <div className="flex flex-col text-center mx-auto">
+                    <span>{sizeSelected}</span>
+                  </div>
+                  {dropdownOpen ? (
+                    <ChevronUp className="ml-2" />
+                  ) : (
+                    <ChevronDown className="ml-2" />
+                  )}
                 </div>
-              )}
+
+                {/* Dropdown List */}
+                {dropdownOpen && (
+                  <div className="text-[#404040] text-sm relative flex flex-wrap justify-around z-10 w-full bg-white mt-1">
+                    {sizes.map((size) => (
+                      <div
+                        key={size}
+                        className={`py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
+                          size === sizeSelected ? "border-2 border-black" : ""
+                        } ${
+                          // Adjust width as needed; here we use full width for the last item
+                          size === sizes[sizes.length - 1]
+                            ? "w-full"
+                            : "w-[23%] "
+                        }`}
+                        onClick={() => handleSizeSelect(size)}
+                      >
+                        <span>{size}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
           {/* Amount Section */}
           <div className="mt-6 product-price ">
             <div className="flex justify-between items-center ">
@@ -789,7 +807,6 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
-
       {/* BRAND PROMISE SECTION */}
       <div className="mt-20 bg-gray-50 text-black py-16 space-y-16">
         <div className="w-full flex flex-col text-center items-center space-y-4">
@@ -827,6 +844,54 @@ const ProductPage = () => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+      {/* related products */}
+      <div className="my-20 text-center text-[#1D1D1F]">
+        <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] mb-12">
+          YOU MAY <i>also</i> LIKE
+        </h1>
+        <RelatedProducts mainProduct={mainProduct} />
+      </div>
+      {/* Story */}
+      <Story response={{ data: { story: productData?.data?.video } }} />
+
+      {/* ALL MOODS SECTION */}
+      <div className="relative mt-12 overflow-hidden">
+        <div className="max-w-screen-xl  mx-auto  flex flex-col lg:flex-row items-center">
+          {/* Text Column */}
+          <div className="w-full relative lg:w-1/3 z-10 space-y-4 px-4 lg:px-8">
+            <h2 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] font-thin text-black leading-tight">
+              ALL MOODS <i>of</i>
+              <br /> KUMARI
+            </h2>
+            <ReadMoreButton
+              link="/our-collections"
+              label="shop all collections"
+              className="inline-block mt-4 px-4 py-2 text-sm  bg-black text-white "
+            />
+          </div>
+          {/* Image Column */}
+          <div className="relative w-full lg:w-2/3 mt-8 lg:mt-0 ">
+            <picture>
+              {/* Mobile image */}
+              <source
+                media="(max-width: 480px)"
+                srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
+              />
+              {/* Tablet image */}
+              <source
+                media="(max-width: 1024px)"
+                srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
+              />
+              {/* Desktop image */}
+              <img
+                src={`${getStrapiURL()}${productData.data.image[2].url}`}
+                alt="All Moods of Kumari"
+                className="w-full h-full object-cover "
+              />
+            </picture>
+          </div>
         </div>
       </div>
     </section>

@@ -131,6 +131,9 @@ body {
   font-family: var(--font_generic);
   line-height: var(--lineheight_generic);
   overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 html {
   overflow-x: hidden;
