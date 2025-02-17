@@ -6,25 +6,11 @@ import { getStrapiURL } from "@/lib/utils";
 const HeartBanner = () => {
   return (
     
-    // <style jsx>{`
-    //     @media (min-width: 991px) {
-    //       .custom-flex {
-    //         display: flex;
-    //         flex-direction: row;
-    //       }
-    //     }
-    //     @media (max-width: 990px) {
-    //       .custom-flex {
-    //         display: flex;
-    //         flex-direction: column;
-    //       }
-    //     }
-    //   `}</style>
 
-      <div className="relative bg-white my-[30px] flex flex-col md:flex-row ">
+      <div className="relative bg-white my-[20px] flex flex-col lg:flex-row ">
 
         {/* Content Container */}
-        <div className="content-data w-full max-w-[1700px] z-10 space-y-4 px-4 order-1 md:relative md:z-10">
+        <div className="content-data w-full max-w-[1700px] z-10 space-y-4 px-4 order-1 lg:relative lg:z-10 mt-24">
           <Link
             href="/our-collections"
             className="min-h-[50px] md:min-h-[350px] z-10 flex flex-col justify-center items-start py-[60px] px-5 relative no-underline"
@@ -37,35 +23,22 @@ const HeartBanner = () => {
         </div>
 
         {/* Image Wrapper */}
-        <div className="w-full order-2 md:absolute md:top-0 md:right-0 md:bottom-0 md:left-0">
+        <div className="w-full order-2 lg:absolute lg:top-0 lg:right-0 lg:bottom-0 lg:left-0 ">
           <Link href="/our-collections" className="z-0 w-full flex justify-end">
             <picture>
-              <source
-                type="image/webp"
-                srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
-                media="(max-width: 479px)"
-              />
-              <source
-                type="image/webp"
-                srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
-                media="(max-width: 991px)"
-              />
+              
               <source
                 srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
                 media="(max-width: 479px)"
               />
               <source
                 srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
-                media="(max-width: 991px)"
-              />
-              <source
-                type="image/webp"
-                srcSet={`${getStrapiURL()}${productData.data.image[2].url}`}
+                media="(max-width: 1024px)"
               />
               <img
                 src={`${getStrapiURL()}${productData.data.image[2].url}`}
                 alt="Kumari All Collection Banner"
-                className="object-cover w-[1200px] h-auto"
+                className="object-cover w-[1200px] h-auto max-md:w-full"
               />
             </picture>
           </Link>
