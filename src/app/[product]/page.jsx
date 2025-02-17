@@ -32,6 +32,7 @@ import {
   Sparkle,
   LoaderCircle,
   Circle,
+  ChevronRight,
 } from "lucide-react";
 import { getProductPageData } from "@/data/loader";
 
@@ -900,22 +901,24 @@ const ProductPage = () => {
       </div>
 
       {/* Feed Section */}
-      <div className="insta-items mt-8">
-        <div className="p-12">
-          <h1 className="text-5xl font-thin text-black">
+      <div className="insta-items mt-6">
+        <div className="pt-10 pb-8 px-4 lg:px-16 text-[#1D1D1F]">
+          <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] 2xl:text-[54px] text-black">
             SHOP <i>the</i> FEED
           </h1>
         </div>
 
         <div>
-          <FeedCarousel cards={FeedData?.data?.feed} slidesPerView={6} />
+          <FeedCarousel cards={FeedData?.data?.feed} />
         </div>
 
         <div className="text-center w-full py-6 border-b">
           <Link href="/instagram/gallery/">
-            <p className="inline-flex items-center justify-center">
+            <p className="inline-flex items-center justify-center text-sm text-[#404040]">
               View Full Gallery
-              <span className="text-2xl ml-1 mb-1">&gt;</span>
+              <span className="text-2xl  ">
+                <ChevronRight size={18} strokeWidth={1} />
+              </span>
             </p>
           </Link>
         </div>
