@@ -190,3 +190,10 @@ button {
   font-size: 32px !important; /* Force icon size */
   color: #000000 !important; /* Apply color */
 }
+
+/* For HeartBanner Component */
+  @media (max-width: 891px) { 
+    .content-data {
+      order: -1; /* Moves the content above the image */
+    }
+  }
