@@ -16,6 +16,7 @@ import { TbMailHeart } from "react-icons/tb";
 import RelatedProducts from "@/components/ui/RelatedProducts";
 import ReadMoreButton from "@/components/ui/ReadMoreButton";
 import Story from "@/components/custom/Homepage/Story";
+import FeedCarousel from "@/components/ui/FeedCarousel";
 
 import {
   Info,
@@ -39,6 +40,8 @@ const ProductPage = () => {
   const productSlug = params.product;
   const URL = getStrapiURL();
   const [productData, setProductData] = useState(null);
+  const [FeedData, setFeedData] = useState(null);
+
   const [swiperKey, setSwiperKey] = useState(0);
   const [metalSelected, setmetalSelected] = useState("");
   const [metalColorSelected, setmetalColorSelected] = useState("");
@@ -68,6 +71,7 @@ const ProductPage = () => {
     const fetchData = async () => {
       const response = await getProductPageData();
       setProductData(response);
+      setFeedData(response);
     };
 
     fetchData();
@@ -892,6 +896,28 @@ const ProductPage = () => {
               />
             </picture>
           </div>
+        </div>
+      </div>
+
+      {/* Feed Section */}
+      <div className="insta-items mt-8">
+        <div className="p-12">
+          <h1 className="text-5xl font-thin text-black">
+            SHOP <i>the</i> FEED
+          </h1>
+        </div>
+
+        <div>
+          <FeedCarousel cards={FeedData?.data?.feed} slidesPerView={6} />
+        </div>
+
+        <div className="text-center w-full py-6 border-b">
+          <Link href="/instagram/gallery/">
+            <p className="inline-flex items-center justify-center">
+              View Full Gallery
+              <span className="text-2xl ml-1 mb-1">&gt;</span>
+            </p>
+          </Link>
         </div>
       </div>
     </section>
