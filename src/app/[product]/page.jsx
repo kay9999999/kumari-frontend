@@ -17,6 +17,7 @@ import RelatedProducts from "@/components/ui/RelatedProducts";
 import ReadMoreButton from "@/components/ui/ReadMoreButton";
 import Story from "@/components/custom/Homepage/Story";
 import FeedCarousel from "@/components/ui/FeedCarousel";
+import HeartBanner from "@/components/ui/HeartBanner";
 
 import {
   Info,
@@ -812,6 +813,7 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
+
       {/* BRAND PROMISE SECTION */}
       <div className="mt-20 bg-gray-50 text-black py-16 space-y-16">
         <div className="w-full flex flex-col text-center items-center space-y-4">
@@ -851,6 +853,7 @@ const ProductPage = () => {
           ))}
         </div>
       </div>
+
       {/* related products */}
       <div className="my-20 text-center text-[#1D1D1F]">
         <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] mb-12">
@@ -858,50 +861,15 @@ const ProductPage = () => {
         </h1>
         <RelatedProducts mainProduct={mainProduct} />
       </div>
+
       {/* Story */}
       <Story response={{ data: { story: productData?.data?.video } }} />
 
-      {/* ALL MOODS SECTION */}
-      <div className="relative mt-12 overflow-hidden">
-        <div className="max-w-screen-xl  mx-auto  flex flex-col lg:flex-row items-center">
-          {/* Text Column */}
-          <div className="w-full relative lg:w-1/3 z-10 space-y-4 px-4 lg:px-8">
-            <h2 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] font-thin text-black leading-tight">
-              ALL MOODS <i>of</i>
-              <br /> KUMARI
-            </h2>
-            <ReadMoreButton
-              link="/our-collections"
-              label="shop all collections"
-              className="inline-block mt-4 px-4 py-2 text-sm  bg-black text-white "
-            />
-          </div>
-          {/* Image Column */}
-          <div className="relative w-full lg:w-2/3 mt-8 lg:mt-0 ">
-            <picture>
-              {/* Mobile image */}
-              <source
-                media="(max-width: 480px)"
-                srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
-              />
-              {/* Tablet image */}
-              <source
-                media="(max-width: 1024px)"
-                srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
-              />
-              {/* Desktop image */}
-              <img
-                src={`${getStrapiURL()}${productData.data.image[2].url}`}
-                alt="All Moods of Kumari"
-                className="w-full h-full object-cover "
-              />
-            </picture>
-          </div>
-        </div>
-      </div>
+      {/* All moods section */}
+      <HeartBanner productData={productData} />
 
       {/* Feed Section */}
-      <div className="insta-items mt-6">
+      <div className="insta-items ">
         <div className="pt-10 pb-8 px-4 lg:px-16 text-[#1D1D1F]">
           <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] 2xl:text-[54px] text-black">
             SHOP <i>the</i> FEED

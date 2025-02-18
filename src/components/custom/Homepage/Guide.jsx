@@ -24,7 +24,7 @@ const Guide = ({ response }) => {
   };
 
   return (
-    <div className="relative max-w-[540px] px-[30px] mx-auto text-customGray p-4 rounded-lg">
+    <div className="relative max-w-[540px] px-[30px] mx-auto text-customGray p-4 mt-12 rounded-lg">
       {/* Wrapper for Image and Buttons */}
       <div className="relative w-full flex items-center justify-center">
         {/* Left Navigation Button */}

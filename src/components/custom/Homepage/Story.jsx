@@ -6,7 +6,7 @@ const Story = ({ response }) => {
   const story = response?.data?.story;
 
   return (
-    <div className="story mt-12 mb-12 xl:ml-10 flex flex-col lg:flex-row items-center lg:items-start">
+    <div className="story mt-12  xl:ml-10 flex flex-col lg:flex-row items-center lg:items-stretch">
       {/* Video Section */}
       <div className="video w-full lg:w-1/2 relative">
         <a href="#">
@@ -38,7 +38,7 @@ const Story = ({ response }) => {
       </div>
 
       {/* Content Section */}
-      <div className="content text-customGray w-full lg:w-1/2 px-6 py-8 lg:py-0 lg:px-12 flex flex-col justify-center text-center items-center lg:h-screen">
+      <div className="content text-customGray w-full lg:w-1/2 px-6 py-8 lg:py-0 lg:px-12 flex flex-col justify-center text-center items-center lg:h-auto">
         <div className="content-wrapper max-w-lg">
           <h2 className="text-3xl lg:text-4xl font-primary leading-none mb-4">
             <i>The</i>

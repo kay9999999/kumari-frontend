@@ -190,3 +190,16 @@ button {
   font-size: 32px !important; /* Force icon size */
   color: #000000 !important; /* Apply color */
 }
+
+/* For HeartBanner Component */
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .hearts-content {
+    margin-top: 250px;
+  }
+}
+@media (min-width: 1025px) and (max-width: 1536px) {
+  .heart-img-wrapper {
+    margin-top: -50px;
+  }
+}

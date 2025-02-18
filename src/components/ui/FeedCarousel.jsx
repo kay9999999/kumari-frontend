@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/swiper-bundle.css";
@@ -14,9 +14,6 @@ import Link from "next/link";
 import { getStrapiURL } from "@/lib/utils";
 
 const FeedCarousel = ({ cards = [] }) => {
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
-
   if (!Array.isArray(cards) || cards.length === 0) {
     return <div>No cards</div>;
   }
