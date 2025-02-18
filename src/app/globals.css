@@ -195,6 +195,11 @@ button {
   
   @media (min-width: 1025px) and (max-width: 1280px) {
     .hearts-content {
-       margin-top: 300px;
+       margin-top: 250px;
+    }
+  }
+  @media (min-width: 1025px) and (max-width: 1536px) {
+    .heart-img-wrapper{
+      margin-top:-50px;
     }
   }
