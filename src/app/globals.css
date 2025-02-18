@@ -192,8 +192,9 @@ button {
 }
 
 /* For HeartBanner Component */
-  @media (max-width: 891px) { 
-    .content-data {
-      order: -1; /* Moves the content above the image */
+  
+  @media (min-width: 1025px) and (max-width: 1280px) {
+    .hearts-content {
+       margin-top: 300px;
     }
   }
