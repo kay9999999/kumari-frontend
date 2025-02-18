@@ -27,15 +27,15 @@ const HeartBanner = () => {
           <Link href="/our-collections" className="z-0 w-full flex justify-end">
             <picture>
               <source
-                srcSet="/images/product/Kumari_All_collection_banner_Mobile_1.jpg"
+                srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
                 media="(max-width: 479px)"
               />
               <source
-                srcSet="/images/product/Kumari_All_collection_banner_Tablet.jpg"
+                 srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
                 media="(max-width: 1024px)"
               />
               <img
-                src="/images/product/Kumari_All_collection_banner_Desktop_1.jpg"
+                src={`${getStrapiURL()}${productData.data.image[2].url}`}
                 alt="Kumari All Collection Banner"
                 className="object-cover w-[1200px] h-auto"
               />
