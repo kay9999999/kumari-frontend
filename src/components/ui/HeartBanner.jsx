@@ -10,7 +10,7 @@ const HeartBanner = ({ productData }) => {
       <div className="w-full max-w-[1700px] z-10 px-4 sm:px-6 md:px-8 lg:absolute lg:z-10 lg:mt-0 lg:w-1/2 lg:pl-6 xl:pl-14 2xl:pl-40 lg:top-0 xl:top-0 lg:left-0 lg:flex lg:flex-row lg:justify-start lg:items-start p-4">
         <Link
           href="/our-collections"
-          className="hearts-content min-h-[50px] xl:top-20 2xl:top-20 z-10 flex flex-col justify-start items-start  relative no-underline  xl:mt-60 lg:space-y-2 xl:space-y-4 "
+          className="hearts-content min-h-[50px] xl:top-20 2xl:top-20 z-10 flex flex-col justify-start items-start  relative no-underline  xl:mt-60 lg:space-y-4 xl:space-y-4  "
         >
           <h2 className="font-primary text-[32px] md:text-[36px] lg:text-[40px] xl:text-[46px] 2xl:text-[54px] max-w-[340px] tracking-tight font-light leading-[1.2] mb-3 lg:mb-0 z-20">
             ALL MOODS <i>of</i> KUMARI
@@ -24,7 +24,7 @@ const HeartBanner = ({ productData }) => {
       </div>
 
       {/* Image Wrapper */}
-      <div className=" w-full lg:w-full lg:relative lg:top-0 lg:bottom-0 lg:right-0 mt-6">
+      <div className=" w-full overflow-hidden lg:w-full lg:relative lg:top-0 lg:bottom-0 lg:right-0 mt-6">
         <Link
           href="/our-collections"
           className="heart-img-wrapper z-0 w-full flex justify-end"
@@ -41,7 +41,7 @@ const HeartBanner = ({ productData }) => {
             <img
               src={`${getStrapiURL()}${productData.data.image[2].url}`}
               alt="Kumari All Collection Banner"
-              className="object-cover w-[1200px] xl:w-[1300px] h-auto lg:mt-36 max-xl:mt-0"
+              className="heart-con object-cover w-[1200px] xl:w-[1300px] h-auto lg:mt-44 max-xl:mt-0"
             />
           </picture>
         </Link>

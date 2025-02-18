@@ -200,6 +200,6 @@ button {
 }
 @media (min-width: 1025px) and (max-width: 1536px) {
   .heart-img-wrapper {
-    margin-top: -50px;
+    margin-top: -90px;
   }
 }
