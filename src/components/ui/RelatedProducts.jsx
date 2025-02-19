@@ -45,7 +45,7 @@ const RelatedProducts = ({ mainProduct }) => {
         id: { $ne: currentProductId },
         collection: { $eq: productCollection },
       },
-      pagination: { limit: 50 }, // Fetch more than needed to randomize selection
+      pagination: { limit: 300 }, // Fetch more than needed to randomize selection
     },
     { encodeValuesOnly: true }
   );
