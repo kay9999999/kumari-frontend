@@ -105,13 +105,19 @@ const FeedCarousel = ({ cards = [] }) => {
         className="swiper-button-prev-custom group absolute top-1/2 left-4 z-10 transform -translate-y-1/2 bg-gray-50 bg-opacity-30 rounded-full p-2 shadow-md hover:bg-gray-100 hover:bg-opacity-50"
         aria-label="Previous slide"
       >
-        <ArrowLeft className="h-5 w-5 text-[#AAAAAA] group-hover:text-white" />
+        <ArrowLeft
+          strokeWidth={2.5}
+          className="h-5 w-5 text-[#AAAAAA] group-hover:text-white"
+        />
       </button>
       <button
         className="swiper-button-next-custom group absolute top-1/2 right-4 z-10 transform -translate-y-1/2 bg-gray-50 bg-opacity-30 rounded-full p-2 shadow-md hover:bg-gray-100 hover:bg-opacity-50"
         aria-label="Next slide"
       >
-        <ArrowRight className="h-5 w-5 text-[#AAAAAA] group-hover:text-white" />
+        <ArrowRight
+          strokeWidth={2.5}
+          className="h-5 w-5 text-[#AAAAAA] group-hover:text-white"
+        />
       </button>
     </div>
   );

@@ -30,16 +30,17 @@ import {
   Share2,
   Weight,
   Gem,
-  Sparkle,
   LoaderCircle,
   Circle,
   ChevronRight,
 } from "lucide-react";
 import { getProductPageData } from "@/data/loader";
+import PriceBreakup from "@/components/custom/PriceBreakup";
 
 const ProductPage = () => {
   const params = useParams();
   const productSlug = params.product;
+
   const URL = getStrapiURL();
   const [productData, setProductData] = useState(null);
   const [FeedData, setFeedData] = useState(null);
@@ -50,7 +51,8 @@ const ProductPage = () => {
   const [diamondQualitySelected, setDiamondQualitySelected] = useState("");
   const [detailsDropdownOpen, setDetailsDropdownOpen] = useState(false);
   const [priceBreakupOpen, setPriceBreakupOpen] = useState(false);
-  const [makingCharges, setMakingCharges] = useState(7952);
+  const [metalCode, setMetalCode] = useState("");
+  const [finalPrice, setFinalPrice] = useState(null);
 
   // Local state for selected size and dropdown open/closed state
   const [sizeSelected, setSizeSelected] = useState("");
@@ -130,7 +132,12 @@ const ProductPage = () => {
   const sizeGuideLabel = availableSizesData.size_guide_label || "Size Guide";
   const sizeGuideLink = availableSizesData.size_guide_link || "/";
 
-  const weight = mainProduct?.weight || {};
+  const weight = mainProduct?.weight || [];
+
+  // Filter the weight detail matching the selected metal type
+  const selectedWeight = weight?.find(
+    (item) => item.metal_type === metalSelected
+  );
 
   // Update selected size if default changes
   useEffect(() => {
@@ -140,7 +147,7 @@ const ProductPage = () => {
   // Fixed ordering arrays
   const metalOrder = ["14k Gold", "18k Gold"];
   const metalColorOrder = ["Rose", "White", "Yellow"];
-  const diamondOrder = ["SI / IJ", "VS / GH", "VVS / EF"];
+  const diamondOrder = ["SI-IJ", "VS-GH", "VVS-EF"];
 
   // metal
   const metalOptions = (
@@ -168,7 +175,7 @@ const ProductPage = () => {
   const diamondOptions = (
     mainProduct?.filter_values?.filter((filter) => {
       const val = filter.value?.toUpperCase();
-      return val === "SI / IJ" || val === "VS / GH" || val === "VVS / EF";
+      return val === "SI-IJ" || val === "VS-GH" || val === "VVS-EF";
     }) || []
   ).sort((a, b) => {
     const aVal = a.value?.toUpperCase();
@@ -193,6 +200,30 @@ const ProductPage = () => {
       setDiamondQualitySelected("");
     }
   }, [mainProduct]);
+
+  // / Create mapping for color abbreviations
+  const colorAbbreviations = {
+    Rose: "R",
+    White: "W",
+    Yellow: "Y",
+  };
+
+  // Generate metal code when metal or color changes
+  useEffect(() => {
+    if (metalSelected && metalColorSelected) {
+      // Convert metal type to code format (e.g., "14K Gold" -> "14KT")
+      const metalPart =
+        metalSelected
+          .replace(/\s/g, "") // Remove spaces
+          .replace(/Gold$/i, "") // Remove "Gold" from the end
+          .toUpperCase() + "T"; // Add T at the end
+
+      // Get color abbreviation
+      const colorPart = colorAbbreviations[metalColorSelected] || "";
+
+      setMetalCode(`${metalPart}${colorPart}`);
+    }
+  }, [metalSelected, metalColorSelected]);
 
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const handleSizeSelect = (size) => {
@@ -389,11 +420,11 @@ const ProductPage = () => {
           <div className="product-options mt-4">
             <div className="flex items-center text-[#1A1A1A] ">
               <span className=" mr-2">Metal Color</span>
-              <span className="text-sm text-[#646464] mr-2">
+              <span className="text-sm text-[#646464] mr-2 pt-0.5">
                 {metalColorSelected}
               </span>
-              <Info className="w-3 h-3 mr-1" />
-              <Link href="/" className="hover:underline  text-sm">
+              <Info className="w-3 h-3 mr-1 " />
+              <Link href="/" className="hover:underline  text-sm pt-0.5">
                 <span>Metal Color Guide</span>
               </Link>
             </div>
@@ -517,7 +548,7 @@ const ProductPage = () => {
           <div className="mt-6 product-price ">
             <div className="flex justify-between items-center ">
               <span className="text-2xl font-primary text-[#1A1A1A]">
-                ₹48,452.68
+                {`₹${parseFloat(finalPrice).toLocaleString()}`}{" "}
               </span>
 
               <div className="flex flex-row items-center gap-1">
@@ -616,7 +647,9 @@ const ProductPage = () => {
               <div className="relative z-10 w-full border border-t-0 border-gray-200 rounded-b overflow-hidden">
                 <div className="flex border-b text-[#4D4D4D] justify-between pb-2">
                   <div className="text-sm pl-4">Specifications</div>
-                  <div className="text-xs pt-0.5 pr-4">SKU: {weight?.SKU}</div>
+                  <div className="text-xs pt-0.5 pr-4">
+                    SKU: {selectedWeight?.SKU}
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 xs:grid-cols-2">
                   {(() => {
@@ -624,7 +657,7 @@ const ProductPage = () => {
                       {
                         title: "Total Weight",
                         Icon: Weight,
-                        value: weight?.total_weight,
+                        value: selectedWeight?.total_weight,
                         description: "Approx. Gross Weight",
                         tooltip:
                           "Weight can vary in the final product. A refund will be initiated if it is lesser than the weight mentioned.",
@@ -632,25 +665,25 @@ const ProductPage = () => {
                       {
                         title: "Metal Weight",
                         Icon: LoaderCircle,
-                        value: weight?.metal_weight,
+                        value: selectedWeight?.metal_weight,
                         description: "Approx. Metal Weight",
                       },
                       {
                         title: "Diamond",
                         Icon: Gem,
-                        value: weight?.diamond_weight,
+                        value: selectedWeight?.diamond_weight,
                         description: "Approx. Diamond Weight",
                       },
                       {
                         title: "Stone",
                         Icon: Gem,
-                        value: weight?.stone_weight,
+                        value: selectedWeight?.stone_weight,
                         description: "Approx. Stone Weight",
                       },
                       {
                         title: "Components",
                         Icon: Circle,
-                        value: weight?.components_weight,
+                        value: selectedWeight?.components_weight,
                         description: "Approx. Components Weight",
                       },
                     ];
@@ -718,99 +751,16 @@ const ProductPage = () => {
             </Transition>
           </div>
           {/* Price Breakup */}
-          <div className="relative mt-4">
-            <div
-              className="flex text-[#4D4D4D] justify-between w-full border rounded p-4 cursor-pointer"
-              onClick={() => setPriceBreakupOpen(!priceBreakupOpen)}
-            >
-              <div className="flex flex-col">
-                <span className="text-sm">Price Breakup</span>
-              </div>
-              {priceBreakupOpen ? (
-                <ChevronUp className="ml-2" />
-              ) : (
-                <ChevronDown className="ml-2" />
-              )}
-            </div>
-
-            {priceBreakupOpen && (
-              <div className="relative flex flex-wrap text-sm px-2 z-10 space-y-3 border-r border-l border-b">
-                {/* Metal Details Display  */}
-                <div className="w-full flex justify-between">
-                  <div>
-                    {metalSelected}-{metalColorSelected} (6.07 gm)
-                  </div>
-                  <div>
-                    <span>₹43,826.63</span>
-                  </div>
-                </div>
-
-                {/* Diamonds Details Display */}
-                <div className="w-full flex justify-between">
-                  <div>Natural Diamonds (0.2ct)</div>
-                  <div>
-                    <span>₹18,000</span>
-                  </div>
-                </div>
-
-                {/* Gemstone Details Display */}
-                <div className="w-full space-y-2">
-                  <div>Gemstone (1.37ct)</div>
-
-                  <div className="w-full flex justify-between">
-                    <div className="ml-4">Sapphire</div>
-                    <div>
-                      <span>₹959.00</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Making Charges Display */}
-                <div className="w-full flex justify-between">
-                  <div>Making Charge</div>
-                  <div>
-                    <span>₹{makingCharges}</span>
-                  </div>
-                </div>
-
-                {/* Other Costs Display */}
-                <div className="w-full space-y-2">
-                  <div>Findings & Other Components </div>
-
-                  <div className="w-full flex justify-between">
-                    <div className="ml-4">Ceramic</div>
-                    <div>
-                      <span>₹6700</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Subtotal Display */}
-                <div className="w-full flex justify-between">
-                  <div>SubTotal</div>
-                  <div>
-                    <span>₹79,523.62</span>
-                  </div>
-                </div>
-
-                {/* Tax Display */}
-                <div className="w-full flex justify-between">
-                  <div>Tax (3%)</div>
-                  <div>
-                    <span>₹2,385.71</span>
-                  </div>
-                </div>
-
-                {/* Total Amount Display */}
-                <div className="w-full font-semibold flex justify-between">
-                  <div>Total</div>
-                  <div>
-                    <span>₹81,909.33</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <PriceBreakup
+            productSlug={productSlug}
+            metalCode={metalCode}
+            diamondQuality={diamondQualitySelected}
+            metalSelected={metalSelected}
+            metalColorSelected={metalColorSelected}
+            priceBreakupOpen={priceBreakupOpen}
+            setPriceBreakupOpen={setPriceBreakupOpen}
+            setFinalPrice={setFinalPrice} // Pass function to receive price
+          />
         </div>
       </div>
 

@@ -10,6 +10,7 @@ const useFetch = (url) => {
     if (!url) return;
 
     let isMounted = true;
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -21,8 +22,9 @@ const useFetch = (url) => {
           setData(res.data.data);
         }
       } catch (err) {
+        console.error("API Fetch Error:", err.response || err.message);
         if (isMounted) {
-          setError(err.response?.data || "An error occurred");
+          setError(err.message || "An error occurred");
         }
       } finally {
         if (isMounted) {

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { getStrapiURL } from "@/lib/utils";
 
 const Hero = async ({ response }) => {
@@ -31,11 +32,13 @@ const Hero = async ({ response }) => {
               type="video/mp4"
             />
           ) : (
-            <img
+            <Image
               src={mobileMedia}
               alt="Hero Mobile"
-              className=" w-full max-w-full h-auto "
-              loading="lazy"
+              layout="responsive"
+              width={1920}
+              height={1080}
+              priority
             />
           )}
         </a>
@@ -54,11 +57,13 @@ const Hero = async ({ response }) => {
               type="video/mp4"
             />
           ) : (
-            <img
+            <Image
               src={desktopMedia}
               alt="Hero Desktop"
-              className=" w-full max-w-full h-auto"
-              loading="lazy"
+              layout="responsive"
+              width={1920}
+              height={1080}
+              priority
             />
           )}
         </a>
