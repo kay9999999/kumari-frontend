@@ -51,6 +51,16 @@ const ProductPage = () => {
   const [priceBreakupOpen, setPriceBreakupOpen] = useState(false);
   const [makingCharges, setMakingCharges] = useState(7952);
 
+  //state for Pop-ups
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isHintPopupOpen, setIsHintPopupOpen] = useState(false);
+
+  const handleOpenHintPopup = () => {setIsHintPopupOpen(true);};
+  const handleCloseHintPopup = () => {setIsHintPopupOpen(false);};
+  const handleShareClick = () => {setIsPopupOpen(true);};
+  const handleClosePopup = () => {setIsPopupOpen(false);};
+
+
   // Local state for selected size and dropdown open/closed state
   const [sizeSelected, setSizeSelected] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -210,9 +220,9 @@ const ProductPage = () => {
         <Breadcrumbs product={product} />
       </div>
       {/* images and details section */}
-      <div className="flex flex-col lg:flex-row pt-2">
+      <div className="productinfo flex flex-col lg:flex-row pt-2">
         {/* Product Images - Mobile Carousel */}
-        <div className="lg:w-3/5 px-8">
+        <div className="prod-img-wrapper lg:w-3/5 px-8">
           <div className="block lg:hidden">
             <Swiper
               key={swiperKey}
@@ -288,7 +298,7 @@ const ProductPage = () => {
         </div>
 
         {/* Product Description */}
-        <div className="lg:w-2/5 px-5 pt-5 lg:pt-0 mx-auto w-full max-w-[540px]">
+        <div className="prod-desc-wrapper lg:w-2/5 px-5 pt-5 lg:pt-0 mx-auto w-full max-w-[540px]">
           <div className="mb-4">
             <h2 className="text-2xl lg:text-[28px] font-[500] mb-3 text-[#1A1A1A]">
               {mainProduct?.title}
@@ -563,26 +573,44 @@ const ProductPage = () => {
                   className="w-full py-2 lg:py-3 hover:opacity-85 transition duration-200 capitalize rounded"
                 />
               </div>
-              <div className="pl-8 space-x-2 flex h-10 lg:h-12">
+             <div className="pl-8 space-x-2 flex h-10 lg:h-12">
+                {/* Map function for Heart and Share2 components */}
                 {[Heart, Share2].map((Icon, index) => (
-                  <div
+                    <div
                     key={index}
                     className="w-10 h-10 lg:w-12 lg:h-12 bg-[#FAFAFA] flex justify-center items-center rounded"
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
+                    >
+                    {/* Render Icon component */}
+                    {Icon === Share2 ? (
+                        <Share2 className="w-5 h-5 cursor-pointer" onClick={handleShareClick} />
+                    ) : (
+                        <>
+                        <Icon className="w-5 h-5" />
+                        <WishlistPopup />
+                        </>
+                    )}
+                    </div>
                 ))}
-              </div>
+
+                {/* Add SharePopup component */}
+                <SharePopup isOpen={isPopupOpen} onClose={handleClosePopup} />
+                </div>
+
+
             </div>
           </div>
 
           {/* Drop a hint */}
-          <div className="flex justify-center p-4 mt-6 w-full bg-[#FAFAFA] rounded">
+          <div>
+          <div className="flex justify-center p-4 mt-6 w-full bg-[#FAFAFA] rounded" onClick={handleOpenHintPopup}>
             <Link href="/" className="flex items-center ">
               <TbMailHeart className="w-5 h-5 mr-2 " strokeWidth={1} />
               <span>Drop a hint</span>
             </Link>
           </div>
+          <HintPopup isOpen={isHintPopupOpen} onClose={handleCloseHintPopup} />
+          </div>
+          
           {/* More Details Section */}
           <div className="relative mt-4">
             {/* Header that toggles the dropdown */}
