@@ -203,3 +203,27 @@ button {
       margin-top:-50px;
     }
   }
+
+/* For Product Page */
+
+ .productinfo {
+    height:320vh; 
+    overflow: visible; 
+  }
+  
+  .prod-img-wrapper {
+    height: 310vh; 
+  }
+  
+  .prod-desc-wrapper {
+    height: 260vh;
+    position: sticky;
+    top: 0;
+  }
+
+  @media (min-width: 320px) and (max-width: 787px) {
+    
+    .productinfo {
+      height:max-content;  
+    }
+  }
