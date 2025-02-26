@@ -1,958 +1,362 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import useFetch from "../../hooks/useFetch";
-import { useParams } from "next/navigation";
-import qs from "qs";
-import { Transition } from "@headlessui/react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
-import "swiper/swiper-bundle.css";
-import { getStrapiURL } from "@/lib/utils";
-import Breadcrumbs from "@/components/custom/Breadcrumbs";
-import Link from "next/link";
-import { IoIosArrowRoundDown } from "react-icons/io";
-import { TbMailHeart } from "react-icons/tb";
-import RelatedProducts from "@/components/ui/RelatedProducts";
-import ReadMoreButton from "@/components/ui/ReadMoreButton";
-import Story from "@/components/custom/Homepage/Story";
-import FeedCarousel from "@/components/ui/FeedCarousel";
-
-import {
-  Info,
-  ChevronDown,
-  ChevronUp,
-  LogOut,
-  Package,
-  MoveUpRight,
-  Heart,
-  Share2,
-  Weight,
-  Gem,
-  Sparkle,
-  LoaderCircle,
-  Circle,
-  ChevronRight,
-} from "lucide-react";
-import { getProductPageData } from "@/data/loader";
-
-const ProductPage = () => {
-  const params = useParams();
-  const productSlug = params.product;
-  const URL = getStrapiURL();
-  const [productData, setProductData] = useState(null);
-  const [FeedData, setFeedData] = useState(null);
-
-  const [swiperKey, setSwiperKey] = useState(0);
-  const [metalSelected, setmetalSelected] = useState("");
-  const [metalColorSelected, setmetalColorSelected] = useState("");
-  const [diamondQualitySelected, setDiamondQualitySelected] = useState("");
-  const [detailsDropdownOpen, setDetailsDropdownOpen] = useState(false);
-  const [priceBreakupOpen, setPriceBreakupOpen] = useState(false);
-  const [makingCharges, setMakingCharges] = useState(7952);
-
-  //state for Pop-ups
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isHintPopupOpen, setIsHintPopupOpen] = useState(false);
-
-  const handleOpenHintPopup = () => {setIsHintPopupOpen(true);};
-  const handleCloseHintPopup = () => {setIsHintPopupOpen(false);};
-  const handleShareClick = () => {setIsPopupOpen(true);};
-  const handleClosePopup = () => {setIsPopupOpen(false);};
+import Link from 'next/link';
+import { React, useState } from 'react';
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { LiaTruckMovingSolid } from "react-icons/lia";
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { HiOutlineGiftTop } from "react-icons/hi2";
+import GiftMessagePopup from '@/components/ui/GiftMessagePopup';
+import CouponPopup from '@/components/ui/couponpopup';
+import { BiSolidOffer } from "react-icons/bi";
+import { IoMdLock, IoIosClose } from "react-icons/io";
+import { MdIosShare } from "react-icons/md";
+import Sharingform from '@/components/ui/sharingform';
 
 
-  // Local state for selected size and dropdown open/closed state
-  const [sizeSelected, setSizeSelected] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const policyIcons = [
-    { url: "/images/truck.png", text: "Free shipping within India" },
-    { url: "/images/return.png", text: "Free 15-day easy returns" },
-    { url: "/images/insurance.png", text: "One-year Jewellery Insurance" },
-    { url: "/images/buyback.png", text: "Lifetime exchange and buy-backs" },
-  ];
+const CartItemInfo = () => {
 
-  useEffect(() => {
-    const handleResize = () => {
-      setSwiperKey((prevKey) => prevKey + 1);
-    };
+  const [isSpecVisible, setIsSpecVisible] = useState(false);
+  const [isDeliveryOption, setDeliveryOption] = useState(false);
+  const [zipCode, setZipCode] = useState('');
+  const [showShippingDetails, setShowShippingDetails] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isSharingFormOpen, setIsSharingFormOpen] = useState(false);
+  
 
-    window.addEventListener("resize", handleResize);
-
-    const fetchData = async () => {
-      const response = await getProductPageData();
-      setProductData(response);
-      setFeedData(response);
-    };
-
-    fetchData();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const productsEndpoint = qs.stringify(
-    {
-      populate: {
-        categories: {
-          sort: ["createdAt:asc"],
-          fields: ["name", "slug"],
-        },
-        sub_categories: {
-          sort: ["createdAt:asc"],
-          fields: ["name", "slug"],
-        },
-        filter_values: { fields: ["value"] },
-        available_sizes: { populate: "*" },
-        weight: { populate: "*" },
-        imageVariants: {
-          populate: {
-            image: { fields: ["url"] },
-          },
-        },
-      },
-
-      filters: {
-        slug: productSlug,
-      },
-    },
-    { encodeValuesOnly: true }
-  );
-
-  const {
-    data: productsData,
-    loading: productsLoading,
-    error: productsError,
-  } = useFetch(`/api/products?${productsEndpoint}`);
-
-  const product = productsData || [];
-  const mainProduct = Array.isArray(product) ? product[0] : product;
-
-  // Extract available_sizes from product (which is an array of one object)
-  const availableSizesData = mainProduct?.available_sizes || {};
-
-  const sizes = availableSizesData?.size?.size || [];
-
-  const defaultSize =
-    availableSizesData.default_size || (sizes.length > 0 ? sizes[0] : "");
-  const sizeGuideLabel = availableSizesData.size_guide_label || "Size Guide";
-  const sizeGuideLink = availableSizesData.size_guide_link || "/";
-
-  const weight = mainProduct?.weight || {};
-
-  // Update selected size if default changes
-  useEffect(() => {
-    setSizeSelected(defaultSize);
-  }, [defaultSize]);
-
-  // Fixed ordering arrays
-  const metalOrder = ["14k Gold", "18k Gold"];
-  const metalColorOrder = ["Rose", "White", "Yellow"];
-  const diamondOrder = ["SI / IJ", "VS / GH", "VVS / EF"];
-
-  // metal
-  const metalOptions = (
-    mainProduct?.filter_values?.filter((filter) => {
-      const value = filter.value;
-      return value === "14k Gold" || value === "18k Gold";
-    }) || []
-  ).sort((a, b) => {
-    const aVal = a.value;
-    const bVal = b.value;
-    return metalOrder.indexOf(aVal) - metalOrder.indexOf(bVal);
-  });
-
-  // metal color
-  const metalColorOptions = (
-    mainProduct?.filter_values?.filter((filter) => {
-      const val = filter.value;
-      return val === "Rose" || val === "White" || val === "Yellow";
-    }) || []
-  ).sort((a, b) => {
-    return metalColorOrder.indexOf(a.value) - metalColorOrder.indexOf(b.value);
-  });
-
-  // diamondOptions
-  const diamondOptions = (
-    mainProduct?.filter_values?.filter((filter) => {
-      const val = filter.value?.toUpperCase();
-      return val === "SI / IJ" || val === "VS / GH" || val === "VVS / EF";
-    }) || []
-  ).sort((a, b) => {
-    const aVal = a.value?.toUpperCase();
-    const bVal = b.value?.toUpperCase();
-    return diamondOrder.indexOf(aVal) - diamondOrder.indexOf(bVal);
-  });
-
-  useEffect(() => {
-    if (metalOptions.length > 0) {
-      setmetalSelected(metalOptions[0].value);
-    } else {
-      setmetalSelected("");
-    }
-    if (metalColorOptions.length > 0) {
-      setmetalColorSelected(metalColorOptions[0].value);
-    } else {
-      setmetalColorSelected("");
-    }
-    if (diamondOptions.length > 0) {
-      setDiamondQualitySelected(diamondOptions[0].value);
-    } else {
-      setDiamondQualitySelected("");
-    }
-  }, [mainProduct]);
-
-  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
-  const handleSizeSelect = (size) => {
-    setSizeSelected(size);
-    setDropdownOpen(false);
+  const toggleSharingForm = () => {
+    setIsSharingFormOpen(!isSharingFormOpen);
+  };
+  const toggleSpecifications = () => {
+    setIsSpecVisible(!isSpecVisible);
+  };
+  const toggleDeliveryOption = () => {
+    setDeliveryOption(!isDeliveryOption);
   };
 
-  if (!mainProduct) return null;
-  if (productsLoading) return <div>Loading...</div>;
-  if (productsError) return <div>Error: {productsError.message}</div>;
+  const handleApply = () => {
+    // console
+    console.log("Applied Zip Code:", zipCode);
+};
+
+  const toggleShippingDetails = () => {
+    setShowShippingDetails(!showShippingDetails);
+  };
+
+  const handleMoveToWishlist = () => {
+    // Handle move 
+    console.log("Moved to Wishlist");
+    setIsPopupVisible(false);
+  };
+
+  const handleRemoveItem = () => {
+    // Handle remove item 
+    console.log("Item Removed");
+    setIsPopupVisible(false);
+  };
+
+  const togglePopup = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
+
+
 
   return (
-    <section className="w-full  pt-20">
-      {/*  dynamic breadcrumbs  */}
-      <div className="w-full pt-2 lg:pt-3 xl:pt-5 px-2 xl:px-0">
-        <Breadcrumbs product={product} />
-      </div>
-      {/* images and details section */}
-      <div className="productinfo flex flex-col lg:flex-row pt-2">
-        {/* Product Images - Mobile Carousel */}
-        <div className="prod-img-wrapper lg:w-3/5 px-8">
-          <div className="block lg:hidden">
-            <Swiper
-              key={swiperKey}
-              spaceBetween={10}
-              navigation
-              loop={true}
-              modules={[Navigation, Autoplay]}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-            >
-              {product.map((item) =>
-                item?.imageVariants
-                  ?.filter((variant) => {
-                    // If the variant has a metalColor set, show it only if it matches the selected metal color.
-                    if (
-                      variant.metalColor &&
-                      variant.metalColor.trim() !== "" &&
-                      variant.metalColor !== "common"
-                    ) {
-                      return (
-                        variant.metalColor.toLowerCase() ===
-                        metalColorSelected.toLowerCase()
-                      );
-                    }
-                    // Otherwise, include the image as a common/default image.
-                    return true;
-                  })
-                  .map((variant, index) => (
-                    <SwiperSlide key={`${item.id}-${index}`}>
-                      <div className="bg-gray-50 overflow-hidden">
-                        <img
-                          src={`${URL}${variant.image.url}`}
-                          alt={item.title}
-                          className="w-full h-auto"
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))
-              )}
-            </Swiper>
-          </div>
 
-          {/* Desktop Grid */}
-          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4 lg:mt-2 xl:mt-1">
-            {product?.map((item) =>
-              item?.imageVariants
-                ?.filter((variant) => {
-                  if (
-                    variant.metalColor &&
-                    variant.metalColor.trim() !== "" &&
-                    variant.metalColor !== "common"
-                  ) {
-                    return (
-                      variant.metalColor.toLowerCase() ===
-                      metalColorSelected.toLowerCase()
-                    );
-                  }
-                  return true;
-                })
-                .map((variant, index) => (
-                  <div
-                    key={`${item.id}-${index}`}
-                    className="bg-gray-50 overflow-hidden"
-                  >
-                    <img
-                      src={`${URL}${variant.image.url}`}
-                      alt={item.title}
-                      className="w-full h-auto"
-                    />
-                  </div>
-                ))
-            )}
-          </div>
-        </div>
-
-        {/* Product Description */}
-        <div className="prod-desc-wrapper lg:w-2/5 px-5 pt-5 lg:pt-0 mx-auto w-full max-w-[540px]">
-          <div className="mb-4">
-            <h2 className="text-2xl lg:text-[28px] font-[500] mb-3 text-[#1A1A1A]">
-              {mainProduct?.title}
-            </h2>
-            <h2 className="uppercase mb-2 text-sm text-[#1A1A1A]">
-              {mainProduct.collection}
-            </h2>
-            <div className="mb-4 text-[#808080] text-[14px]">
-              {mainProduct?.info?.map((paragraph, index) => (
-                <p key={index}>
-                  {paragraph.children.map((child, idx) => (
-                    <span
-                      key={idx}
-                      style={{
-                        whiteSpace: "pre-wrap",
-                        fontStyle: child.italic ? "italic" : "normal",
-                        fontWeight: child.bold ? "bold" : "normal",
-                        textDecoration: `${
-                          child.underline ? "underline" : ""
-                        } ${child.strikethrough ? "line-through" : ""}`,
-                      }}
-                    >
-                      {child.text}
-                    </span>
-                  ))}
-                </p>
-              ))}
-            </div>
-
-            <div className="flex flex-row items-center">
-              <a
-                href="#"
-                className="hover:underline text-black flex items-center"
-              >
-                <span>Write a review</span>
-                <span>
-                  <IoIosArrowRoundDown size={20} />
-                </span>
-              </a>
-            </div>
-
-            <div className="flex flex-row items-center mt-5">
-              <h4 className="mr-4 text-[#1A1A1A] ">Certifications</h4>
-              <picture className="flex space-x-6">
-                <a
-                  href="https://www.bis.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="/images/certificate-logoHolm.png"
-                    alt="BIS logo"
-                    className="object-cover w-15 h-9"
-                  />
-                </a>
-                <a
-                  href="https://sgl-labs.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="/images/certificate-logoSGL.png"
-                    alt="BIS logo"
-                    className="object-cover w-15 h-9"
-                  />
-                </a>
-              </picture>
-            </div>
-          </div>
-          {/* Metal */}
-          <div className="product-options mt-4">
-            <div className="flex items-center text-[#1A1A1A] space-x-1">
-              <span className="  mr-2">Metal</span>
-              <Info className="w-3 h-3" />
-              <Link href="/" className="hover:underline  text-sm">
-                <span>Metal Guide</span>
-              </Link>
-            </div>
-
-            <div className="flex text-center text-sm text-[#404040] mt-2 space-x-3">
-              {metalOptions.map((filter) => (
-                <div
-                  key={filter.id}
-                  className={`flex-grow  border  rounded p-4 cursor-pointer ${
-                    metalSelected === filter.value
-                      ? "border-2 border-black"
-                      : " hover:outline hover:outline-gray-300 hover:outline-1"
-                  }`}
-                  onClick={() => setmetalSelected(filter.value)}
-                >
-                  <span>{filter.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Metal Color */}
-          <div className="product-options mt-4">
-            <div className="flex items-center text-[#1A1A1A] ">
-              <span className=" mr-2">Metal Color</span>
-              <span className="text-sm text-[#646464] mr-2">
-                {metalColorSelected}
-              </span>
-              <Info className="w-3 h-3 mr-1" />
-              <Link href="/" className="hover:underline  text-sm">
-                <span>Metal Color Guide</span>
-              </Link>
-            </div>
-
-            <div className="flex text-center text-sm mt-2 space-x-3 text-[#404040]">
-              {metalColorOptions.map((option) => {
-                const colorValue = option.value; // e.g. "Rose", "White", or "Yellow"
-                return (
-                  <div
-                    key={option.id}
-                    className={`flex-grow border  rounded p-2 cursor-pointer ${
-                      metalColorSelected === colorValue
-                        ? "border-2 border-black"
-                        : " hover:outline hover:outline-gray-300 hover:outline-1"
-                    }`}
-                    onClick={() => setmetalColorSelected(colorValue)}
-                  >
-                    <picture>
-                      <img
-                        src={`/images/${colorValue.toLowerCase()}.png`}
-                        alt={colorValue}
-                        className="mx-auto w-[30px] h-[30px]"
-                      />
-                    </picture>
-                    <span className="block text-center mt-1">{colorValue}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          {/* Diamond Quality */}
-          <div className="product-options mt-4">
-            <div className="flex items-center text-[#1A1A1A]">
-              <span className="  mr-2">Diamond Quality</span>
-              <Info className="w-3 h-3 mr-1" />
-              <Link href="/" className="hover:underline text-sm">
-                <span>Diamond Guide</span>
-              </Link>
-            </div>
-
-            <div className="flex text-center text-sm text-[#404040] mt-2 space-x-3">
-              {diamondOptions.map((option) => {
-                const qualityValue = option.value;
-                return (
-                  <div
-                    key={option.id}
-                    className={`flex-grow border  rounded p-4 cursor-pointer ${
-                      diamondQualitySelected === qualityValue
-                        ? "border-2 border-black"
-                        : " hover:outline hover:outline-gray-300 hover:outline-1"
-                    }`}
-                    onClick={() => setDiamondQualitySelected(qualityValue)}
-                  >
-                    <span>{qualityValue}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          {/* {Size} */}
-          {sizes?.length > 0 && (
-            <div className="product-options mt-4">
-              {/* Header with dynamic size guide */}
-              <div className="flex items-center text-[#1A1A1A] space-x-1">
-                <span className="mr-2">Size</span>
-                <Info className="w-3 h-3" />
-                {sizeGuideLink && (
-                  <Link
-                    href={sizeGuideLink}
-                    className="hover:underline text-sm"
-                  >
-                    <span>{sizeGuideLabel}</span>
-                  </Link>
-                )}
-              </div>
-
-              {/* Dropdown Toggle */}
-              <div className="relative mt-2">
-                <div
-                  className={`text-[#4D4D4D] text-sm flex justify-between items-center w-full text-center border rounded p-4 cursor-pointer ${
-                    dropdownOpen ? "border-gray-300" : "border-2 border-black"
-                  }`}
-                  onClick={toggleDropdown}
-                >
-                  <div className="flex flex-col text-center mx-auto">
-                    <span>{sizeSelected}</span>
-                  </div>
-                  {dropdownOpen ? (
-                    <ChevronUp className="ml-2" />
-                  ) : (
-                    <ChevronDown className="ml-2" />
-                  )}
-                </div>
-
-                {/* Dropdown List */}
-                {dropdownOpen && (
-                  <div className="text-[#404040] text-sm relative flex flex-wrap justify-around z-10 w-full bg-white mt-1">
-                    {sizes.map((size) => (
-                      <div
-                        key={size}
-                        className={`py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
-                          size === sizeSelected ? "border-2 border-black" : ""
-                        } ${
-                          // Adjust width as needed; here we use full width for the last item
-                          size === sizes[sizes.length - 1]
-                            ? "w-full"
-                            : "w-[23%] "
-                        }`}
-                        onClick={() => handleSizeSelect(size)}
-                      >
-                        <span>{size}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Amount Section */}
-          <div className="mt-6 product-price ">
-            <div className="flex justify-between items-center ">
-              <span className="text-2xl font-primary text-[#1A1A1A]">
-                ₹48,452.68
-              </span>
-
-              <div className="flex flex-row items-center gap-1">
-                <Link
-                  href="/"
-                  className="hover:underline flex items-center gap-1"
-                >
-                  <LogOut className="w-3 h-3" />
-                  <span className="text-sm">Signup for Price Alert</span>
-                </Link>
-              </div>
-            </div>
-
-            <p className="text-xs mt-2  text-[#808080]">
-              Eligible for a Cash on Delivery, You can choose it during
-              checkout.
-            </p>
-          </div>
-          {/* Postcode Section */}
-          <div className="mt-6">
-            <div className="flex items-center text-[#404040] space-x-2">
-              <Package className="w-5 h-5" />
-              <span>Order Today : </span>
-            </div>
-            <div>
-              <p className="text-xs text-[#404040] mt-2">
-                Delivery not available
-              </p>
-              <Link href="/" className="hover:underline ">
-                <span className="text-xs flex items-center mt-1 gap-1">
-                  Enter your postcode for exact delivery timelines
-                  <MoveUpRight className="w-2.5 h-2.5" />
-                </span>
-              </Link>
-            </div>
-          </div>
-          {/* Add to cart */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white flex justify-center items-center z-20 lg:relative lg:mt-6 lg:bg-none lg:justify-start lg:z-0 py-2 lg:py-0">
-            <div className="px-2 lg:px-0 w-full max-w-lg flex items-center justify-between">
-              <div className="flex-1">
-                <ReadMoreButton
-                  link="/"
-                  label="Add to Bag"
-                  className="w-full py-2 lg:py-3 hover:opacity-85 transition duration-200 capitalize rounded"
-                />
-              </div>
-             <div className="pl-8 space-x-2 flex h-10 lg:h-12">
-                {/* Map function for Heart and Share2 components */}
-                {[Heart, Share2].map((Icon, index) => (
-                    <div
-                    key={index}
-                    className="w-10 h-10 lg:w-12 lg:h-12 bg-[#FAFAFA] flex justify-center items-center rounded"
-                    >
-                    {/* Render Icon component */}
-                    {Icon === Share2 ? (
-                        <Share2 className="w-5 h-5 cursor-pointer" onClick={handleShareClick} />
-                    ) : (
-                        <>
-                        <Icon className="w-5 h-5" />
-                        <WishlistPopup />
-                        </>
-                    )}
-                    </div>
-                ))}
-
-                {/* Add SharePopup component */}
-                <SharePopup isOpen={isPopupOpen} onClose={handleClosePopup} />
-                </div>
-
-
-            </div>
-          </div>
-
-          {/* Drop a hint */}
-          <div>
-          <div className="flex justify-center p-4 mt-6 w-full bg-[#FAFAFA] rounded" onClick={handleOpenHintPopup}>
-            <Link href="/" className="flex items-center ">
-              <TbMailHeart className="w-5 h-5 mr-2 " strokeWidth={1} />
-              <span>Drop a hint</span>
-            </Link>
-          </div>
-          <HintPopup isOpen={isHintPopupOpen} onClose={handleCloseHintPopup} />
-          </div>
-          
-          {/* More Details Section */}
-          <div className="relative mt-4">
-            {/* Header that toggles the dropdown */}
-            <div
-              className={`flex text-[#4D4D4D] justify-between w-full border rounded-t cursor-pointer p-4 ${
-                detailsDropdownOpen ? "border-b-0" : ""
-              }`}
-              onClick={() => setDetailsDropdownOpen(!detailsDropdownOpen)}
-            >
-              <div className="flex flex-col">
-                <span className="text-sm">More Details</span>
-              </div>
-              {detailsDropdownOpen ? (
-                <ChevronUp className="ml-2" />
-              ) : (
-                <ChevronDown className="ml-2" />
-              )}
-            </div>
-
-            {/* Transition for dropdown content with stretching animation */}
-            <Transition
-              show={detailsDropdownOpen}
-              enter="transition-all duration-300 ease-out"
-              enterFrom="opacity-0 transform origin-top scale-y-0"
-              enterTo="opacity-100 transform origin-top scale-y-100"
-              leave="transition-all duration-300 ease-in"
-              leaveFrom="opacity-100 transform translate-y-0 max-h-screen"
-              leaveTo="opacity-0 transform -translate-y-2 max-h-0"
-            >
-              <div className="relative z-10 w-full border border-t-0 border-gray-200 rounded-b overflow-hidden">
-                <div className="flex border-b text-[#4D4D4D] justify-between pb-2">
-                  <div className="text-sm pl-4">Specifications</div>
-                  <div className="text-xs pt-0.5 pr-4">SKU: {weight?.SKU}</div>
-                </div>
-                <div className="grid grid-cols-1 xs:grid-cols-2">
-                  {(() => {
-                    const sections = [
-                      {
-                        title: "Total Weight",
-                        Icon: Weight,
-                        value: weight?.total_weight,
-                        description: "Approx. Gross Weight",
-                        tooltip:
-                          "Weight can vary in the final product. A refund will be initiated if it is lesser than the weight mentioned.",
-                      },
-                      {
-                        title: "Metal Weight",
-                        Icon: LoaderCircle,
-                        value: weight?.metal_weight,
-                        description: "Approx. Metal Weight",
-                      },
-                      {
-                        title: "Diamond",
-                        Icon: Gem,
-                        value: weight?.diamond_weight,
-                        description: "Approx. Diamond Weight",
-                      },
-                      {
-                        title: "Stone",
-                        Icon: Gem,
-                        value: weight?.stone_weight,
-                        description: "Approx. Stone Weight",
-                      },
-                      {
-                        title: "Components",
-                        Icon: Circle,
-                        value: weight?.components_weight,
-                        description: "Approx. Components Weight",
-                      },
-                    ];
-
-                    const validSections = sections.filter(
-                      (section) =>
-                        section.value !== undefined && section.value !== null
-                    );
-
-                    if (validSections.length === 0) return null;
-
-                    return validSections.map((section, index) => {
-                      const isLastOdd =
-                        validSections.length % 2 !== 0 &&
-                        index === validSections.length - 1;
-                      return (
-                        <div
-                          key={section.title}
-                          className={`flex flex-col items-center justify-center p-4 border-gray-200 ${
-                            !isLastOdd ? "xs:border-r" : ""
-                          } ${
-                            !isLastOdd || validSections.length > 1
-                              ? "xs:border-b"
-                              : ""
-                          } ${isLastOdd ? "xs:col-span-2" : ""}`}
-                        >
-                          <section.Icon
-                            strokeWidth={1}
-                            className="mb-2 text-[#4D4D4D]"
-                          />
-                          <h1 className="text-sm font-medium text-[#4D4D4D]">
-                            {section.title}
-                          </h1>
-                          <div className="flex items-center space-x-1 mt-1">
-                            {section.hasLink ? (
-                              <Link
-                                href="/"
-                                className="text-sm text-[#4D4D4D] underline"
-                              >
-                                {section.value}
-                              </Link>
-                            ) : (
-                              <p className="text-sm text-[#4D4D4D] underline">
-                                {section.value}
-                              </p>
-                            )}
-                            {section.tooltip && (
-                              <span className="relative group inline-block">
-                                <Info className="w-4 h-4 cursor-pointer text-[#4D4D4D]" />
-                                <span className="absolute left-1/2 transform -translate-x-1/2 -top-10 w-40 bg-[#555] text-white text-xs rounded py-1 px-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
-                                  {section.tooltip}
-                                </span>
-                              </span>
-                            )}
-                          </div>
-                          <p className="mt-1 text-xs text-[#808080]">
-                            {section.description}
-                          </p>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
-              </div>
-            </Transition>
-          </div>
-          {/* Price Breakup */}
-          <div className="relative mt-4">
-            <div
-              className="flex text-[#4D4D4D] justify-between w-full border rounded p-4 cursor-pointer"
-              onClick={() => setPriceBreakupOpen(!priceBreakupOpen)}
-            >
-              <div className="flex flex-col">
-                <span className="text-sm">Price Breakup</span>
-              </div>
-              {priceBreakupOpen ? (
-                <ChevronUp className="ml-2" />
-              ) : (
-                <ChevronDown className="ml-2" />
-              )}
-            </div>
-
-            {priceBreakupOpen && (
-              <div className="relative flex flex-wrap text-sm px-2 z-10 space-y-3 border-r border-l border-b">
-                {/* Metal Details Display  */}
-                <div className="w-full flex justify-between">
-                  <div>
-                    {metalSelected}-{metalColorSelected} (6.07 gm)
-                  </div>
-                  <div>
-                    <span>₹43,826.63</span>
-                  </div>
-                </div>
-
-                {/* Diamonds Details Display */}
-                <div className="w-full flex justify-between">
-                  <div>Natural Diamonds (0.2ct)</div>
-                  <div>
-                    <span>₹18,000</span>
-                  </div>
-                </div>
-
-                {/* Gemstone Details Display */}
-                <div className="w-full space-y-2">
-                  <div>Gemstone (1.37ct)</div>
-
-                  <div className="w-full flex justify-between">
-                    <div className="ml-4">Sapphire</div>
-                    <div>
-                      <span>₹959.00</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Making Charges Display */}
-                <div className="w-full flex justify-between">
-                  <div>Making Charge</div>
-                  <div>
-                    <span>₹{makingCharges}</span>
-                  </div>
-                </div>
-
-                {/* Other Costs Display */}
-                <div className="w-full space-y-2">
-                  <div>Findings & Other Components </div>
-
-                  <div className="w-full flex justify-between">
-                    <div className="ml-4">Ceramic</div>
-                    <div>
-                      <span>₹6700</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Subtotal Display */}
-                <div className="w-full flex justify-between">
-                  <div>SubTotal</div>
-                  <div>
-                    <span>₹79,523.62</span>
-                  </div>
-                </div>
-
-                {/* Tax Display */}
-                <div className="w-full flex justify-between">
-                  <div>Tax (3%)</div>
-                  <div>
-                    <span>₹2,385.71</span>
-                  </div>
-                </div>
-
-                {/* Total Amount Display */}
-                <div className="w-full font-semibold flex justify-between">
-                  <div>Total</div>
-                  <div>
-                    <span>₹81,909.33</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      {/* BRAND PROMISE SECTION */}
-      <div className="mt-20 bg-gray-50 text-black py-16 space-y-16">
-        <div className="w-full flex flex-col text-center items-center space-y-4">
-          <h1 className="text-[40px] lg:text-[45px] xl:text-[52px] font-primary">
-            BRAND PROMISE
-          </h1>
-          <p className="w-3/4 xl:w-1/2 mx-auto text-xs sm:text-sm lg:text-base">
-            Our shopping experience is carefully designed with you in mind.
-            Stress-free from start to finish with complimentary, no-hassle
-            services—and that's our promise.
-          </p>
-        </div>
-
-        {/* icon&text */}
-        <div className="flex flex-wrap justify-center">
-          {policyIcons.map((icon, index) => (
-            <div
-              key={index}
-              className="w-1/2 sm:w-1/4 p-4 flex flex-col items-center"
-            >
-              <div className="items-center flex flex-col  ">
-                <div className="icon w-14 h-14 lg:w-20 lg:h-20 flex-shrink-0">
-                  {icon && (
-                    <img
-                      src={`${icon.url}`}
-                      alt={icon.alternativeText || `policy Icon ${index + 1}`}
-                      className="w-full h-full object-contain "
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-                <div className="w-full break-words tracking-wide text-xs lg:text-sm font-secondary font-light text-white  mt-4   text-center">
-                  <p className="max-w-28 lg:max-w-32 text-black">{icon.text}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* related products */}
-      <div className="my-20 text-center text-[#1D1D1F]">
-        <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] mb-12">
-          YOU MAY <i>also</i> LIKE
-        </h1>
-        <RelatedProducts mainProduct={mainProduct} />
-      </div>
-      {/* Story */}
-      <Story response={{ data: { story: productData?.data?.video } }} />
-
-      {/* ALL MOODS SECTION */}
-      <div className="relative mt-12 overflow-hidden">
-        <div className="max-w-screen-xl  mx-auto  flex flex-col lg:flex-row items-center">
-          {/* Text Column */}
-          <div className="w-full relative lg:w-1/3 z-10 space-y-4 px-4 lg:px-8">
-            <h2 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] font-thin text-black leading-tight">
-              ALL MOODS <i>of</i>
-              <br /> KUMARI
-            </h2>
-            <ReadMoreButton
-              link="/our-collections"
-              label="shop all collections"
-              className="inline-block mt-4 px-4 py-2 text-sm  bg-black text-white "
-            />
-          </div>
-          {/* Image Column */}
-          <div className="relative w-full lg:w-2/3 mt-8 lg:mt-0 ">
-            <picture>
-              {/* Mobile image */}
-              <source
-                media="(max-width: 480px)"
-                srcSet={`${getStrapiURL()}${productData.data.image[0].url}`}
-              />
-              {/* Tablet image */}
-              <source
-                media="(max-width: 1024px)"
-                srcSet={`${getStrapiURL()}${productData.data.image[1].url}`}
-              />
-              {/* Desktop image */}
-              <img
-                src={`${getStrapiURL()}${productData.data.image[2].url}`}
-                alt="All Moods of Kumari"
-                className="w-full h-full object-cover "
-              />
-            </picture>
-          </div>
-        </div>
+  <section className='mx-auto p-2'>
+    
+     <div className="flex flex-col text-center justify-center mt-16 mb-10">
+        <h1 className="text-4xl font-bold sm:text-4xl text-[#1A1A1A]">Review your bag.</h1>
+        <p className="my-4 mx-auto leading-relaxed font-semibold lg:w-1/2 max-sm:w-full text-[#404040]">
+          Get free shipping and free returns on all orders.
+        </p>
       </div>
 
-      {/* Feed Section */}
-      <div className="insta-items mt-6">
-        <div className="pt-10 pb-8 px-4 lg:px-16 text-[#1D1D1F]">
-          <h1 className="font-primary text-[27px] sm:text-[32px] md:text-[36px] lg:text-[42px] xl:text-[46px] 2xl:text-[54px] text-black">
-            SHOP <i>the</i> FEED
-          </h1>
-        </div>
+      {/* Cart Page items & Details */}
+      <div className="test flex flex-col md:flex-row mx-auto justify-center py-10 lg:w-3/4 border-t border-b relative">
+      
+  {/* Image Section */}
+  <div className="flex justify-center w-full md:w-[200px] min-h-px">
+    <span className="block relative w-1/2 md:w-full pb-[60%]">
+      <picture>
+        <img
+          className="absolute inset-0 object-cover"
+          src="https://media.kumari.co/media/catalog/product/cache/163aeb3e622214d723a1a27f886c88da/r/f/rfas0070-yl-k.jpg"
+          alt="Royal Rebel Seal Statement Ring"
+          loading="lazy"
+        />
+      </picture>
+    </span>
+  </div>
 
+  {/* Content Section */}
+  <div className="flex flex-col flex-1 ml-0 md:ml-8 w-full">
+    {/* Primary Info */}
+    <div className="flex max-md:flex-col">
+      <div className="flex-1 pr-4 w-full">
+        <strong className="text-xl text-[#4D4D4D]">
+          <Link href="#">Royal Rebel Seal Statement Ring</Link>
+        </strong>
+      </div>
+
+      {/* Quantity and Price */}
+      <div className="flex justify-between min-w-[180px] gap-6">
+        <div className="flex justify-center w-18">
+          <select
+            id="cart-qty"
+            name="cart-qty"
+            className="w-full h-10 px-3 border border-gray-300 rounded"
+          >
+            {[...Array(10)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1 text-right">
+          <span className="text-xl font-semibold text-[#1A1A1A]">₹49,778</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Specifications */}
+    <div className="mt-4 relative">
+      <div className="flex justify-between items-start">
         <div>
-          <FeedCarousel cards={FeedData?.data?.feed} />
-        </div>
-
-        <div className="text-center w-full py-6 border-b">
-          <Link href="/instagram/gallery/">
-            <p className="inline-flex items-center justify-center text-sm text-[#404040]">
-              View Full Gallery
-              <span className="text-2xl  ">
-                <ChevronRight size={18} strokeWidth={1} />
-              </span>
-            </p>
+          <Link href="#" className="flex items-center gap-1 text-base font-semibold cursor-pointer text-[#000000]" onClick={toggleSpecifications}>
+            Specifications {isSpecVisible ? <FaChevronUp /> : <FaChevronDown />}
           </Link>
         </div>
       </div>
-    </section>
+
+      {/* Fixed height for the specifications section */}
+      <div className={`spec-info mt-4 transition-all duration-500 ${isSpecVisible ? 'max-h-40' : 'max-h-0 overflow-hidden'}`}>
+        <div className="space-y-2 text-[#404040]">
+          <div>
+            <span className="font-medium">SKU:</span> RFAS0070-14-YL-SIIJ-R12-0506
+          </div>
+          <div>
+            <span className="font-medium">Metal:</span> 14k Gold
+          </div>
+          <div>
+            <span className="font-medium">Metal Color:</span> Yellow
+          </div>
+          <div>
+            <span className="font-medium">Diamond Quality:</span> SI / IJ
+          </div>
+          <div>
+            <span className="font-medium">Size:</span> R12
+          </div>
+        </div>
+      </div>
+
+      {/* Remove Button */}
+      <div className="remove absolute top-0 right-0">
+        <Link href="#" className="flex items-center gap-1 text-base cursor-pointer" onClick={togglePopup}>
+          <RiDeleteBin6Line />
+          <span>Remove</span>
+        </Link>
+      </div>
+    </div>
+
+    {/* Delivery Section */}
+    <div className="mt-6 pt-6 border-t border-gray-300 w-full relative">
+      <div className="flex flex-row items-center">
+        <div className="text-3xl mr-2 h-full text-center absolute">
+          <LiaTruckMovingSolid className="text-gray-600 h-6 w-6 mt-3" />
+        </div>
+        <div className="flex-1 ml-8 text-[#404040]">
+          <div className="font-semibold">Delivery:</div>
+          <div className="mt-1">
+            <span className="font-normal">1x</span> Ships in 1-3 weeks
+          </div>
+          <div className="mt-1">
+            <div className="flex items-center">
+              <Link href="#" className="flex items-center gap-1 text-[#000000]" onClick={toggleDeliveryOption}>
+                Delivery option for: {zipCode || ''}
+                {isDeliveryOption ? <FaChevronUp /> : <FaChevronDown />}
+              </Link>
+            </div>
+            {isDeliveryOption && (
+              <div className="mb-6 relative w-full md:w-1/3">
+                <form>
+                  <input
+                    type="text"
+                    id="ZipCode"
+                    name="ZipCode"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder=""
+                    className="block w-full p-4 border mt-2 rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-200 placeholder-transparent pr-16"
+                  />
+                  <label
+                    htmlFor="ZipCode"
+                    className="absolute left-4 top-0 text-gray-400 text-sm"
+                  >
+                    Zip Code
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    className="absolute right-0 top-2 rounded-lg px-4 py-2 hover:underline cursor-pointer"
+                  >
+                    Apply
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Popup Overlay */}
+{isPopupVisible && (
+  <div className="popup-overlay fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div className="popup-content bg-white p-6 border rounded-lg w-11/12 md:w-1/2 lg:w-1/2 flex flex-col md:flex-row items-center relative">
+      {/* Close Button */}
+      <button
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+        onClick={togglePopup}
+      >
+       <IoIosClose className='bg-gray-500 text-white rounded-full w-6 h-6 hover:bg-black focus:outline-none'/>
+      </button>
+
+      {/* Left Side: Image */}
+      <div className="w-full md:w-1/3 mb-4 md:mb-0">
+        <img
+          src="https://media.kumari.co/media/catalog/product/cache/163aeb3e622214d723a1a27f886c88da/r/f/rfas0070-yl-k.jpg"
+          alt="Royal Rebel Seal Statement Ring"
+          className="w-full h-auto rounded"
+        />
+      </div>
+
+      {/* Right Side: Heading and Buttons */}
+      <div className="w-full md:w-3/5 md:ml-4">
+        <h2 className="text-xl font-semibold mb-1">Remove item from shopping bag?</h2>
+        <p className=" mb-4">Tip : Add it to your wishlist to purchase it later!</p>
+        <div className="flex flex-col justify-center  space-y-2">
+          <button
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-600"
+            onClick={handleMoveToWishlist}
+          >
+            Move to Wishlist
+          </button>
+          <button
+            className=" px-4 py-2 rounded "
+            onClick={handleRemoveItem}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+  
+      {/* Gift message */}
+      <div className="flex flex-row mx-auto items-center space-x-2 py-6 lg:w-3/4 border-b">
+          <HiOutlineGiftTop className='h-6 w-6 rounded-xl text-gray-800' />
+          <h1 className="font-bold text-lg text-[#404040]">Gift message or gift wrap</h1>
+          <span className="border-l pl-2 ml-2"><GiftMessagePopup /></span> 
+      </div> 
+
+<div className="flex flex-row mx-auto lg:w-3/4 py-6 text-[#404040]">
+
+  <div className="w-1/4 min-h-px hidden md:block">&nbsp;</div>
+
+      <div className="lg:w-3/4 w-full flex flex-col">
+        {/* Subtotal */}
+        <div className="flex justify-between items-center">
+          <div>Subtotal</div>
+          <div>
+            <span>₹48,328.26</span>
+          </div>
+        </div>
+
+        {/* CouponCode */}
+        <div className="flex justify-between items-center mt-2"> 
+          <div className="flex items-center gap-1">
+            <BiSolidOffer className='h-6 w-6'/>
+          Have Coupon Code ? <b><CouponPopup /></b></div>
+            <span>couponamount</span>
+          </div>
+        
+        {/* Shipping */}
+        <div className="flex justify-between items-center mt-2" onClick={toggleShippingDetails}>
+            <div className="flex items-center gap-1">Shipping {showShippingDetails && (
+            <div className=" text-gray-600">
+              (Standard - Shipping)
+            </div>
+          )}
+          </div>
+            <span>₹0</span>
+          </div>
+
+        
+        {/* Estimated Tax */}
+          <div className="flex justify-between items-center mt-2 border-b pb-6"> 
+          <div>Estimated Tax</div>
+            <span>₹1,449.85</span>
+          </div>
+      
+
+      {/* Total */}
+          <div className="flex justify-between items-center mt-4">
+            <h1 className="text-2xl font-bold">Total</h1>
+            <span className="text-2xl font-bold text-[#1A1A1A]">₹49,828.26</span>    
+        </div>
+
+      </div>
+
+</div>
+    
+
+<div className="flex justify-end lg:w-3/4 mx-auto">
+   <p className="text-sm text-[#808080]">Your shopping bag is eligible for a Cash on Delivery. You can choose it during checkout.</p>
+</div>
+
+
+<div className="flex justify-center md:justify-end lg:w-3/4 mx-auto">
+      <ul className="p-4 w-[440px]">
+        <li className="mt-4">
+          <button
+            type="button"
+            className="flex items-center justify-center w-full px-4 py-4 bg-black text-white rounded hover:bg-gray-700 transition duration-200 gap-1"
+          >
+            <IoMdLock className="w-5 h-5" />
+            <span className="text-lg text-center">Proceed to Checkout</span>
+          </button>
+        </li>
+
+        <li className="mt-4">
+          <button
+            type="button"
+            onClick={toggleSharingForm}
+            className="flex justify-center items-center gap-1 w-full max-w-[440px] px-4 py-2 transition duration-200"
+          >
+            <MdIosShare className="w-5 h-5" />
+            <span className="text-center">Share Your Bag</span>
+          </button>
+        </li>
+      </ul>
+
+      {/* Sharingform component */}
+      {isSharingFormOpen && <Sharingform onClose={toggleSharingForm} />}
+    </div>
+
+
+
+
+
+  </section>
+
   );
 };
 
-export default ProductPage;
+export default CartItemInfo;
+
