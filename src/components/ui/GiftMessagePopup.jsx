@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
 import styled, { createGlobalStyle } from 'styled-components';
+import { CiMail } from "react-icons/ci";
 
 // scrollbar styles for Webkit browsers
 const GlobalStyle = createGlobalStyle`
@@ -99,7 +100,7 @@ const GiftMessagePopup = () => {
           <PopupContainer>
             {/* Header */}
             <Header>
-              <h2 className="text-3xl font-normal">Personalize your gift message</h2>
+              <h2 className="lg:text-3xl font-semibold md:text-2xl sm:text-lg">Personalize your gift message</h2>
               <button onClick={togglePopup}>
                 <IoIosClose className="bg-gray-500 text-white rounded-full w-6 h-6 hover:bg-black focus:outline-none" />
               </button>
@@ -114,14 +115,17 @@ const GiftMessagePopup = () => {
               <form className="space-y-4 p-4">
                 <div className="mb-6 relative">
                   <input
-                    type="text"
-                    id="Name"
-                    name="Name"
+                    type="email"
+                    id="mail"
+                    name="mail"
                     placeholder=""
                     className="block w-full p-4 border outline-none rounded-lg focus:border-pink-600 focus:ring-4 focus:ring-pink-600 placeholder-transparent"
                   />
                   <label htmlFor="Name" className="absolute left-4 -top-1 text-gray-500">
-                    Name
+                    From Email
+                  </label>
+                  <label htmlFor="mail" className="absolute right-2 top-4 text-gray-500 text-center">
+                     <CiMail className=" w-6 h-6  text-gray-500"/>
                   </label>
                 </div>
 
@@ -133,8 +137,11 @@ const GiftMessagePopup = () => {
                     placeholder=""
                     className="block w-full p-4 outline-none border rounded-lg focus:border-pink-500 focus:ring-4 focus:ring-pink-600 placeholder-transparent"
                   />
-                  <label htmlFor="mail" className="absolute left-4 -top-1 text-gray-500">
-                    Email
+                  <label htmlFor="Name" className="absolute left-4 -top-1 text-gray-500">
+                    To Email
+                  </label>
+                  <label htmlFor="mail" className="absolute right-2 top-4 text-gray-500 text-center">
+                     <CiMail className=" w-6 h-6  text-gray-500"/>
                   </label>
                 </div>
 
