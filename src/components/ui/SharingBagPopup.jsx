@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
 
-const Sharingform = ({ onClose }) => {
+const SharingBag = ({ onClose }) => {
   const [isOpen, setIsOpen] = useState(true); 
 
   const togglePopup = () => {
@@ -98,5 +98,5 @@ const Sharingform = ({ onClose }) => {
   );
 };
 
-export default Sharingform;
+export default SharingBag;
 
