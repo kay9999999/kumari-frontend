@@ -27,7 +27,7 @@ const GiftMessagePopup = () => {
           onClick={handleOverlayClick}
         >
           <div 
-            className="bg-white rounded-xl w-3/4 md:w-1/2" 
+            className="  bg-white rounded-xl w-3/4 md:w-1/2" 
             style={{ maxHeight: '120vh', overflowY: 'auto', position: 'absolute', top: '2%', bottom: '2%' }}
           >
             {/* Header */}
@@ -38,6 +38,10 @@ const GiftMessagePopup = () => {
               </button>
             </div>
 
+            <div 
+            className="  bg-white rounded-xl" 
+            style={{ maxHeight: '120vh', overflowY: 'auto', position: 'absolute', top: '2%', bottom: '2%' }}
+          >
             {/* Image Section */}
             <img src="/images/checkout/gift-box.jpg" alt="Gift" className="my-4 w-full h-auto" />
 
@@ -49,7 +53,7 @@ const GiftMessagePopup = () => {
                 id="Name"
                 name="Name"
                 placeholder=""
-                className="block w-full p-4 border rounded-lg focus:border-pink-500 foucs:ring foucs:ring-ping-200
+                className="block w-full p-4 border rounded-lg focus:border-pink-600 focus:ring-4 focus:ring-pink-600
                     placeholder-transparent"
                 />
 
@@ -67,7 +71,7 @@ const GiftMessagePopup = () => {
               id="mail"
               name="mail"
               placeholder=""
-              className="block w-full p-4 border rounded-lg focus:border-pink-500 foucs:ring foucs:ring-ping-200
+              className="block w-full p-4 border rounded-lg focus:border-pink-500 focus:ring-2 focus:ring-ping-200
                  placeholder-transparent"
             />
 
@@ -95,7 +99,9 @@ const GiftMessagePopup = () => {
               <button onClick={togglePopup} className="font-semibold">Cancel</button>
             </div>
           </div>
+</div>
         </div>
+
       )}
     </>
   );
