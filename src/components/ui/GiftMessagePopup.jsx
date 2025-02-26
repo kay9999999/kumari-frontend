@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
+import './GiftMessagePopup.css';
 
 const GiftMessagePopup = () => {
   const [isOpen, setIsOpen] = useState(false);
