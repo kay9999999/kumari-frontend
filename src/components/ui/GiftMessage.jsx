@@ -126,7 +126,7 @@ const GiftMessage = () => {
                     id="Name"
                     name="Name"
                     placeholder=""
-                    className="block w-full p-4 border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-200 placeholder-transparent"
+                    className="block w-full p-4 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent"
                   />
                   <label
                     htmlFor="Name"
@@ -142,7 +142,7 @@ const GiftMessage = () => {
                     id="mail"
                     name="mail"
                     placeholder=""
-                    className="block w-full p-4 border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-200 placeholder-transparent"
+                    className="block w-full p-4 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent"
                   />
                   <label
                     htmlFor="mail"
@@ -158,7 +158,7 @@ const GiftMessage = () => {
                     name="message"
                     rows="4"
                     placeholder="Your Message"
-                    className="border rounded w-full py-2 px-3 text-gray-700 leading-tight"
+                    className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
                   />
                   <label
                     htmlFor="message"
