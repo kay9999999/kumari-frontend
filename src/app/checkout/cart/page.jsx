@@ -349,7 +349,28 @@ const CartItemInfo = () => {
       {isSharingFormOpen && <Sharingform onClose={toggleSharingForm} />}
     </div>
 
+<div className="border-t my-6">
 
+  <div className="flex flex-col mx-auto space-y-4 my-14 lg:w-3/4">
+   <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">
+      Need more help?
+    </h2>
+    <p className="text-[#404040] text-sm sm:text-base">
+      Reach us All Day from 10:30 AM – 08:30 PM IST{" "}
+      <a href="tel:+912048552268" className="hover:cursor-pointer hover:underline text-black"
+      >
+        +91 2048552268
+      </a>
+      <br />
+      Or contact us at:{" "}
+      <a href="mailto:care@kumari.co"
+        className="hover:cursor-pointer hover:underline text-black"
+      >
+        care@kumari.co
+      </a>
+    </p>
+  </div>
+</div>
 
 
 
