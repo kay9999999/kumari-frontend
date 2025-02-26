@@ -124,7 +124,10 @@ const CartItemInfo = () => {
     <div className="mt-4 relative">
       <div className="flex justify-between items-start">
         <div>
-          <Link href="#" className="flex items-center gap-1 text-base font-semibold cursor-pointer text-[#000000]" onClick={toggleSpecifications}>
+          <Link href="#" className="flex items-center gap-1 text-base font-semibold cursor-pointer text-[#000000]" onClick={(e) => {
+            e.preventDefault(); 
+            toggleSpecifications(); 
+          }}>
             Specifications {isSpecVisible ? <FaChevronUp /> : <FaChevronDown />}
           </Link>
         </div>
@@ -173,7 +176,11 @@ const CartItemInfo = () => {
           </div>
           <div className="mt-1">
             <div className="flex items-center">
-              <Link href="#" className="flex items-center gap-1 text-[#000000]" onClick={toggleDeliveryOption}>
+              <Link href="#" className="flex items-center gap-1 text-[#000000]"
+                onClick={(e) => {
+              e.preventDefault(); 
+              toggleDeliveryOption(); 
+            }}>
                 Delivery option for: {zipCode || ''}
                 {isDeliveryOption ? <FaChevronUp /> : <FaChevronDown />}
               </Link>
