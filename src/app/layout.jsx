@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header/Header";
 import { getGlobalPageData } from "@/data/loader";
 import Footer from "@/components/Footer/Footer";
+import StoreProvider from "@/redux/storeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,9 +28,12 @@ export default async function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header data={globalData?.data?.header} />
-        <main>{children}</main>
-        <Footer data={globalData?.data?.footer} />
+        <StoreProvider>
+          <Header data={globalData?.data?.header} />
+          <main>{children}</main>
+          <Footer data={globalData?.data?.footer} />
+          <div id="static-add-to-cart-container" />
+        </StoreProvider>
       </body>
     </html>
   );

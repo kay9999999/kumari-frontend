@@ -9,7 +9,7 @@ const PriceBreakup = ({
   diamondQuality,
   priceBreakupOpen,
   setPriceBreakupOpen,
-  setFinalPrice, // Receive function from Product Page
+  setPriceData, // Receive function from Product Page
 }) => {
   const url =
     productSlug && metalCode && diamondQuality
@@ -20,10 +20,10 @@ const PriceBreakup = ({
 
   // Send final price to parent when pricingData is available
   React.useEffect(() => {
-    if (pricingData?.breakdown?.finalPrice) {
-      setFinalPrice(pricingData.breakdown.finalPrice);
+    if (pricingData) {
+      setPriceData(pricingData);
     }
-  }, [pricingData, setFinalPrice]);
+  }, [pricingData, setPriceData]);
 
   if (!pricingData) return null;
 

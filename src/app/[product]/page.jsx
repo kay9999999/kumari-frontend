@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import useFetch from "../../hooks/useFetch";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import qs from "qs";
 import { Transition } from "@headlessui/react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -18,6 +19,8 @@ import ReadMoreButton from "@/components/ui/ReadMoreButton";
 import Story from "@/components/custom/Homepage/Story";
 import FeedCarousel from "@/components/ui/FeedCarousel";
 import HeartBanner from "@/components/ui/HeartBanner";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/redux/cartReducer";
 
 import {
   Info,
@@ -40,10 +43,13 @@ import PriceBreakup from "@/components/custom/PriceBreakup";
 const ProductPage = () => {
   const params = useParams();
   const productSlug = params.product;
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   const URL = getStrapiURL();
   const [productData, setProductData] = useState(null);
   const [FeedData, setFeedData] = useState(null);
+  const [atBottom, setAtBottom] = useState(false);
 
   const [swiperKey, setSwiperKey] = useState(0);
   const [metalSelected, setmetalSelected] = useState("");
@@ -52,7 +58,8 @@ const ProductPage = () => {
   const [detailsDropdownOpen, setDetailsDropdownOpen] = useState(false);
   const [priceBreakupOpen, setPriceBreakupOpen] = useState(false);
   const [metalCode, setMetalCode] = useState("");
-  const [finalPrice, setFinalPrice] = useState(null);
+  const [PriceData, setPriceData] = useState(null);
+  const [fullSKU, setFullSKU] = useState("");
 
   // Local state for selected size and dropdown open/closed state
   const [sizeSelected, setSizeSelected] = useState("");
@@ -230,6 +237,170 @@ const ProductPage = () => {
     setSizeSelected(size);
     setDropdownOpen(false);
   };
+
+  // SKU generation
+
+  useEffect(() => {
+    // Make sure all selections and base SKU are available
+    if (
+      metalSelected &&
+      metalColorSelected &&
+      diamondQualitySelected &&
+      sizeSelected &&
+      mainProduct?.sku
+    ) {
+      const baseSKU = mainProduct.sku; // e.g., "RSTR0057"
+
+      // Extract numeric part from metal (e.g., "18k Gold" => "18")
+      const metalMatch = metalSelected.match(/\d+/);
+      const metalCode = metalMatch ? metalMatch[0] : "";
+
+      // Map metal color to desired abbreviation
+      const metalColorMapping = {
+        Rose: "RS",
+        White: "WH",
+        Yellow: "YL",
+      };
+      const metalColorCode = metalColorMapping[metalColorSelected] || "";
+
+      // Remove dashes from diamond quality (e.g., "VS-GH" => "VSGH")
+      const diamondQualityCode = diamondQualitySelected.replace(/-/g, "");
+
+      // For size, if it doesn't already start with "R", prefix it
+      const sizeCode = sizeSelected.startsWith("R")
+        ? sizeSelected
+        : "R" + sizeSelected;
+
+      // Build the full SKU string
+      const sku = `${baseSKU}-${metalCode}-${metalColorCode}-${diamondQualityCode}-${sizeCode}`;
+      setFullSKU(sku);
+    }
+  }, [
+    metalSelected,
+    metalColorSelected,
+    diamondQualitySelected,
+    sizeSelected,
+    mainProduct,
+  ]);
+
+  // Function to extract the first matching image based on selected metal color.
+  const getSelectedImage = () => {
+    // Find the first variant that matches the selected metal color.
+    const variant =
+      mainProduct?.imageVariants?.find((variant) => {
+        if (
+          variant.metalColor &&
+          variant.metalColor.trim() !== "" &&
+          variant.metalColor.toLowerCase() === metalColorSelected.toLowerCase()
+        ) {
+          return true;
+        }
+        return false;
+      }) || mainProduct?.imageVariants?.[0];
+    return variant ? `${URL}${variant.image.url}` : "";
+  };
+
+  const handleAddToCart = () => {
+    console.log("handleAddToCart called");
+
+    // Build the cart item object with all required fields.
+    const cartItem = {
+      id: mainProduct?.id,
+      title: mainProduct?.title,
+      image: getSelectedImage(), // first image based on the selection
+      metal: metalSelected,
+      metalColor: metalColorSelected,
+      diamondWeight: selectedWeight?.diamond_weight,
+      diamondQuality: diamondQualitySelected,
+      size: sizeSelected,
+      sku: fullSKU,
+      price: PriceData?.breakdown?.finalPrice,
+      quantity: 1,
+    };
+
+    // Dispatch the action to update the Redux store.
+    dispatch(addToCart(cartItem));
+
+    // Navigate to the cart page.
+    router.push("/checkout/cart");
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // When near the bottom of the page (within 50px), consider it "at bottom"
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 50
+      ) {
+        setAtBottom(true);
+      } else {
+        setAtBottom(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // run on mount
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Fixed version of the add-to-cart bar
+  const fixedAddToCart = (
+    <div
+      className={`fixed bottom-0 left-0 right-0 bg-white flex justify-center items-center z-20 lg:relative lg:mt-6 lg:bg-none lg:justify-start lg:z-0 py-2 lg:py-0 transition-opacity duration-300 ${
+        atBottom ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
+      <div className="px-2 w-full max-w-lg flex items-center justify-between">
+        <div className="flex-1">
+          <ReadMoreButton
+            onClick={handleAddToCart}
+            label="Add to Bag"
+            className="w-full py-2 lg:py-3 hover:opacity-85 transition duration-200 capitalize rounded"
+          />
+        </div>
+        <div className="pl-8 space-x-2 flex h-10 lg:h-12">
+          {[Heart, Share2].map((Icon, index) => (
+            <div
+              key={index}
+              className="w-10 h-10 lg:w-12 lg:h-12 bg-[#FAFAFA] flex justify-center items-center rounded"
+            >
+              <Icon className="w-5 h-5" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Static version that will be rendered via a portal
+  const staticAddToCart = (
+    <div
+      className={`lg:hidden bg-white flex justify-center items-center py-2 border-t transition-opacity duration-300 ${
+        atBottom ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div className="px-2 w-full max-w-lg flex items-center justify-between">
+        <div className="flex-1">
+          <ReadMoreButton
+            onClick={handleAddToCart}
+            label="Add to Bag"
+            className="w-full py-2 lg:py-3 hover:opacity-85 transition duration-200 capitalize rounded"
+          />
+        </div>
+        <div className="pl-8 space-x-2 flex h-10 lg:h-12">
+          {[Heart, Share2].map((Icon, index) => (
+            <div
+              key={index}
+              className="w-10 h-10 lg:w-12 lg:h-12 bg-[#FAFAFA] flex justify-center items-center rounded"
+            >
+              <Icon className="w-5 h-5" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   if (!mainProduct) return null;
   if (productsLoading) return <div>Loading...</div>;
@@ -548,7 +719,9 @@ const ProductPage = () => {
           <div className="mt-6 product-price ">
             <div className="flex justify-between items-center ">
               <span className="text-2xl font-primary text-[#1A1A1A]">
-                {`₹${parseFloat(finalPrice).toLocaleString()}`}{" "}
+                {`₹${parseFloat(
+                  PriceData?.breakdown?.finalPrice
+                ).toLocaleString()}`}
               </span>
 
               <div className="flex flex-row items-center gap-1">
@@ -585,28 +758,16 @@ const ProductPage = () => {
               </Link>
             </div>
           </div>
+
           {/* Add to cart */}
-          <div className="fixed bottom-0 left-0 right-0 bg-white flex justify-center items-center z-20 lg:relative lg:mt-6 lg:bg-none lg:justify-start lg:z-0 py-2 lg:py-0">
-            <div className="px-2 lg:px-0 w-full max-w-lg flex items-center justify-between">
-              <div className="flex-1">
-                <ReadMoreButton
-                  link="/"
-                  label="Add to Bag"
-                  className="w-full py-2 lg:py-3 hover:opacity-85 transition duration-200 capitalize rounded"
-                />
-              </div>
-              <div className="pl-8 space-x-2 flex h-10 lg:h-12">
-                {[Heart, Share2].map((Icon, index) => (
-                  <div
-                    key={index}
-                    className="w-10 h-10 lg:w-12 lg:h-12 bg-[#FAFAFA] flex justify-center items-center rounded"
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Render the fixed version only if not at bottom */}
+          {fixedAddToCart}
+
+          {/* When at bottom, render the static version in the portal */}
+          {ReactDOM.createPortal(
+            staticAddToCart,
+            document.getElementById("static-add-to-cart-container")
+          )}
 
           {/* Drop a hint */}
           <div className="flex justify-center p-4 mt-6 w-full bg-[#FAFAFA] rounded">
@@ -647,9 +808,7 @@ const ProductPage = () => {
               <div className="relative z-10 w-full border border-t-0 border-gray-200 rounded-b overflow-hidden">
                 <div className="flex border-b text-[#4D4D4D] justify-between pb-2">
                   <div className="text-sm pl-4">Specifications</div>
-                  <div className="text-xs pt-0.5 pr-4">
-                    SKU: {selectedWeight?.SKU}
-                  </div>
+                  <div className="text-xs pt-0.5 pr-4">SKU: {fullSKU}</div>
                 </div>
                 <div className="grid grid-cols-1 xs:grid-cols-2">
                   {(() => {
@@ -759,7 +918,7 @@ const ProductPage = () => {
             metalColorSelected={metalColorSelected}
             priceBreakupOpen={priceBreakupOpen}
             setPriceBreakupOpen={setPriceBreakupOpen}
-            setFinalPrice={setFinalPrice} // Pass function to receive price
+            setPriceData={setPriceData} // Pass function to receive price
           />
         </div>
       </div>

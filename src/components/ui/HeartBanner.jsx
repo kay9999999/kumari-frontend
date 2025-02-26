@@ -16,7 +16,6 @@ const HeartBanner = ({ productData }) => {
             ALL MOODS <i>of</i> KUMARI
           </h2>
           <ReadMoreButton
-            link="/our-collections"
             label="shop all collections"
             className="px-4 py-2 text-sm hover:scale-x-110 hover:translate-x-2"
           />

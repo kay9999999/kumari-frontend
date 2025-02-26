@@ -8,6 +8,7 @@ import { TfiLocationPin } from "react-icons/tfi";
 import BlackStrip from "./BlackStrip";
 import Logo from "./Logo";
 import Navigation from "./Navigation";
+import { useSelector } from "react-redux";
 
 const Header = ({ data }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,6 +27,8 @@ const Header = ({ data }) => {
     gifts,
     collection,
   } = data;
+
+  const cartItems = useSelector((state) => state.cart.products);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,7 +77,7 @@ const Header = ({ data }) => {
       {/* Header Section */}
       <div className=" relative z-50">
         {/* Navbar */}
-        <div className=" flex bg-white justify-between items-center pt-2 pb-2 relative ">
+        <div className=" flex bg-white justify-between items-center pt-1 pb-1 relative ">
           <button
             className={`pl-2 lg:hidden text-gray-700 text-lg button-one`}
             onClick={handleMenuToggle}
@@ -140,7 +143,14 @@ const Header = ({ data }) => {
             />
             <GoSearch className="hidden lg:block text-gray-700 text-xl cursor-pointer hover:text-gray-600" />
             <SlHeart className="text-xl cursor-pointer hover:text-gray-600" />
-            <IoBagOutline className="text-xl cursor-pointer hover:text-gray-600" />
+            <div className="relative inline-block">
+              <IoBagOutline className="text-xl cursor-pointer hover:text-gray-600" />
+              {cartItems.length > 0 && (
+                <span className="absolute top-5 right-1 inline-flex items-center justify-center w-4 h-4 text-[9px] font-bold leading-none text-white bg-black rounded-full transform translate-x-1/2 -translate-y-1/2">
+                  {cartItems.length}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

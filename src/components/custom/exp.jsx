@@ -1,93 +1,95 @@
-<div className="relative mt-4">
-  <div
-    className="flex text-[#4D4D4D] justify-between w-full border rounded p-4 cursor-pointer"
-    onClick={() => setPriceBreakupOpen(!priceBreakupOpen)}
-  >
-    <div className="flex flex-col">
-      <span className="text-sm">Price Breakup</span>
-    </div>
-    {priceBreakupOpen ? (
-      <ChevronUp className="ml-2" />
-    ) : (
-      <ChevronDown className="ml-2" />
-    )}
-  </div>
+"use client";
 
-  {priceBreakupOpen && (
-    <div className="relative flex flex-wrap text-sm px-2 z-10 space-y-3 border-r border-l border-b">
-      {/* Metal Details Display  */}
-      <div className="w-full flex justify-between">
-        <div>
-          {metalSelected}-{metalColorSelected} (6.07 gm)
-        </div>
-        <div>
-          <span>₹43,826.63</span>
-        </div>
-      </div>
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeItem } from "@/redux/cartReducer";
 
-      {/* Diamonds Details Display */}
-      <div className="w-full flex justify-between">
-        <div>Natural Diamonds (0.2ct)</div>
-        <div>
-          <span>₹18,000</span>
-        </div>
-      </div>
+const Cart = () => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.products);
 
-      {/* Gemstone Details Display */}
-      <div className="w-full space-y-2">
-        <div>Gemstone (1.37ct)</div>
+  // Calculate the subtotal price
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
-        <div className="w-full flex justify-between">
-          <div className="ml-4">Sapphire</div>
-          <div>
-            <span>₹959.00</span>
+  return (
+    <div className="cart-container w-full max-w-[1040px] px-5 mx-auto">
+      <div className="bag mt-[76px] lg:mt-[84px] xl:mt-[92px]">
+        <div className="flex flex-col items-center py-20 px-5">
+          <h1 className="mb-2 text-[24px] md:text-[36px] text-[#1A1A1A]">
+            Review your bag.
+          </h1>
+          <div className="text-center font-semibold text-[14px] md:text-[15px] text-[#404040]">
+            Get free shipping and free returns on all orders.
           </div>
         </div>
       </div>
 
-      {/* Making Charges Display */}
-      <div className="w-full flex justify-between">
-        <div>Making Charge</div>
-        <div>
-          <span>₹{makingCharges}</span>
-        </div>
-      </div>
-
-      {/* Other Costs Display */}
-      <div className="w-full space-y-2">
-        <div>Findings & Other Components </div>
-
-        <div className="w-full flex justify-between">
-          <div className="ml-4">Ceramic</div>
-          <div>
-            <span>₹6700</span>
+      {cartItems.length > 0 ? (
+        cartItems.map((item) => (
+          <div
+            key={item.sku}
+            className="bag-items w-full border-t border-[#e7e7e8] mb-5"
+          >
+            <div className="cart flex flex-col border-b border-[#e7e7e8] py-4">
+              <div className="bag-iteminfo flex flex-col md:flex-row">
+                <div className="bag-image w-[180px]">
+                  <img
+                    src={`${item?.image}`}
+                    alt={item?.title || "Product Image"}
+                    className="w-full object-cover"
+                  />
+                </div>
+                <div className="bag-content flex flex-col flex-1 ml-4 mt-4 md:mt-0">
+                  <div className="primary-info">
+                    <div className="item-details">
+                      <strong className="block break-words">
+                        {item.title}
+                      </strong>
+                      <p className="mt-1 text-sm text-gray-600">
+                        SKU: {item.sku}
+                      </p>
+                      <p className="mt-1 text-sm text-gray-600">
+                        Metal: {item.metal}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Metal Color: {item.metalColor}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Carat: {item.diamondWeight}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Diamond Quality: {item.diamondQuality}
+                      </p>
+                      <p className="text-sm text-gray-600">Size: {item.size}</p>
+                    </div>
+                    <div className="qty-price flex justify-between mt-2">
+                      <div className="qty flex items-center text-sm">
+                        Quantity: {item.quantity || 1}
+                      </div>
+                      <div className="price text-right font-semibold text-sm">
+                        ₹{(item.price * (item.quantity || 1)).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    className="mt-2 text-red-500 underline text-sm"
+                    onClick={() => dispatch(removeItem(item.sku))}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Subtotal Display */}
-      <div className="w-full flex justify-between">
-        <div>SubTotal</div>
-        <div>
-          <span>₹79,523.62</span>
-        </div>
-      </div>
-
-      {/* Tax Display */}
-      <div className="w-full flex justify-between">
-        <div>Tax (3%)</div>
-        <div>
-          <span>₹2,385.71</span>
-        </div>
-      </div>
-
-      {/* Total Amount Display */}
-      <div className="w-full font-semibold flex justify-between">
-        <div>Total</div>
-        <div>
-          <span>₹81,909.33</span>
-        </div>
-      </div>
+        ))
+      ) : (
+        <p className="text-center py-10">Your cart is empty.</p>
+      )}
     </div>
-  )}
-</div>;
+  );
+};
+
+export default Cart;

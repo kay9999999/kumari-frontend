@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 
-const ReadMoreButton = ({ link, label, className }) => {
+const ReadMoreButton = ({ onClick, link, label, className }) => {
   const router = useRouter();
 
   const handleReadMore = () => {
@@ -9,7 +9,7 @@ const ReadMoreButton = ({ link, label, className }) => {
 
   return (
     <button
-      onClick={handleReadMore}
+      onClick={onClick}
       className={`bg-black text-white uppercase  ${className}`}
     >
       {label}

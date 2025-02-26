@@ -4,7 +4,7 @@ import { StrapiImage } from "../custom/Strapi-image";
 
 export const EarringsDropdown = ({ earrings }) => (
   <div
-    className="font-secondary pt-6 pl-6 mt-4 xl:mt-5 border-t border-gray-300 absolute w-[900px]  bg-white shadow-md z-50"
+    className="font-secondary pt-6 pl-6 mt-4  border-t border-gray-300 absolute w-[900px]  bg-white shadow-md z-50"
     style={{
       left: "-100px",
       right: "auto",

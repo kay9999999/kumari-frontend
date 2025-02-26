@@ -17,7 +17,7 @@ const Footer = ({ data }) => {
           </div>
         </div>
         <div className="xl:pl-32 mt-4 pl-4 font-generic text-white">
-          <p className="uppercase font-between">Hey Kumari!</p>
+          <p className="uppercase font-between">Hey Sweetheart!</p>
           <p className="text-sm mt-1">
             Let us in on your inner circle for some fantastic offers.
           </p>
@@ -37,7 +37,7 @@ const Footer = ({ data }) => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
             {/* KUMARI GUIDES */}
             <div>
-              <h3 className="font-semibold mb-2">KUMARI GUIDES</h3>
+              <h3 className="font-semibold mb-2">MIOROLA GUIDES</h3>
               <ul className=" text-sm space-y-2">
                 <li className="hover:underline cursor-pointer">Style Guide</li>
                 <li className="hover:underline cursor-pointer">Size Guide</li>
