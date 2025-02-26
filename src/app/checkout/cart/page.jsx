@@ -66,8 +66,8 @@ const CartItemInfo = () => {
   <section className='mx-auto p-2'>
     
      <div className="flex flex-col text-center justify-center mt-16 mb-10">
-        <h1 className="text-4xl font-bold sm:text-4xl">Review your bag.</h1>
-        <p className="my-4 mx-auto leading-relaxed font-semibold lg:w-1/2 max-sm:w-full">
+        <h1 className="text-4xl font-bold sm:text-4xl text-[#1A1A1A]">Review your bag.</h1>
+        <p className="my-4 mx-auto leading-relaxed font-semibold lg:w-1/2 max-sm:w-full text-[#404040]">
           Get free shipping and free returns on all orders.
         </p>
       </div>
@@ -94,7 +94,7 @@ const CartItemInfo = () => {
     {/* Primary Info */}
     <div className="flex max-md:flex-col">
       <div className="flex-1 pr-4 w-full">
-        <strong className="text-xl">
+        <strong className="text-xl text-[#4D4D4D]">
           <Link href="#">Royal Rebel Seal Statement Ring</Link>
         </strong>
       </div>
@@ -115,7 +115,7 @@ const CartItemInfo = () => {
           </select>
         </div>
         <div className="flex-1 text-right">
-          <span className="text-xl font-semibold">₹49,778</span>
+          <span className="text-xl font-semibold text-[#1A1A1A]">₹49,778</span>
         </div>
       </div>
     </div>
@@ -124,7 +124,7 @@ const CartItemInfo = () => {
     <div className="mt-4 relative">
       <div className="flex justify-between items-start">
         <div>
-          <Link href="#" className="flex items-center gap-1 text-base font-semibold cursor-pointer" onClick={toggleSpecifications}>
+          <Link href="#" className="flex items-center gap-1 text-base font-semibold cursor-pointer text-[#000000]" onClick={toggleSpecifications}>
             Specifications {isSpecVisible ? <FaChevronUp /> : <FaChevronDown />}
           </Link>
         </div>
@@ -132,7 +132,7 @@ const CartItemInfo = () => {
 
       {/* Fixed height for the specifications section */}
       <div className={`spec-info mt-4 transition-all duration-500 ${isSpecVisible ? 'max-h-40' : 'max-h-0 overflow-hidden'}`}>
-        <div className="space-y-2 text-gray-600">
+        <div className="space-y-2 text-[#404040]">
           <div>
             <span className="font-medium">SKU:</span> RFAS0070-14-YL-SIIJ-R12-0506
           </div>
@@ -166,14 +166,14 @@ const CartItemInfo = () => {
         <div className="text-3xl mr-2 h-full text-center absolute">
           <LiaTruckMovingSolid className="text-gray-600 h-6 w-6 mt-3" />
         </div>
-        <div className="flex-1 ml-8 text-gray-600">
+        <div className="flex-1 ml-8 text-[#404040]">
           <div className="font-semibold">Delivery:</div>
           <div className="mt-1">
             <span className="font-normal">1x</span> Ships in 1-3 weeks
           </div>
           <div className="mt-1">
             <div className="flex items-center">
-              <Link href="#" className="flex items-center gap-1" onClick={toggleDeliveryOption}>
+              <Link href="#" className="flex items-center gap-1 text-[#000000]" onClick={toggleDeliveryOption}>
                 Delivery option for: {zipCode || ''}
                 {isDeliveryOption ? <FaChevronUp /> : <FaChevronDown />}
               </Link>
@@ -261,11 +261,11 @@ const CartItemInfo = () => {
       {/* Gift message */}
       <div className="flex flex-row mx-auto items-center space-x-2 py-6 lg:w-3/4 border-b">
           <HiOutlineGiftTop className='h-6 w-6 rounded-xl text-gray-800' />
-          <h1 className="font-bold text-lg">Gift message or gift wrap</h1>
+          <h1 className="font-bold text-lg text-[#404040]">Gift message or gift wrap</h1>
           <span className="border-l pl-2 ml-2"><GiftMessagePopup /></span> 
       </div> 
 
-<div className="flex flex-row mx-auto lg:w-3/4 py-6">
+<div className="flex flex-row mx-auto lg:w-3/4 py-6 text-[#404040]">
 
   <div className="w-1/4 min-h-px hidden md:block">&nbsp;</div>
 
@@ -308,7 +308,7 @@ const CartItemInfo = () => {
       {/* Total */}
           <div className="flex justify-between items-center mt-4">
             <h1 className="text-2xl font-bold">Total</h1>
-            <span className="text-2xl font-bold">₹49,828.26</span>    
+            <span className="text-2xl font-bold text-[#1A1A1A]">₹49,828.26</span>    
         </div>
 
       </div>
@@ -317,7 +317,7 @@ const CartItemInfo = () => {
     
 
 <div className="flex justify-end lg:w-3/4 mx-auto">
-   <p className="text-gray-600 text-sm">Your shopping bag is eligible for a Cash on Delivery. You can choose it during checkout.</p>
+   <p className="text-sm text-[#808080]">Your shopping bag is eligible for a Cash on Delivery. You can choose it during checkout.</p>
 </div>
 
 
