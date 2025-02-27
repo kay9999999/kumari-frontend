@@ -119,59 +119,77 @@ const GiftMessage = () => {
               />
 
               {/* Form Section */}
-              <form className="space-y-4 p-4">
-                <div className="mb-6 relative">
-                  <input
-                    type="text"
-                    id="Name"
-                    name="Name"
-                    placeholder=""
-                    className="block w-full p-4 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent"
-                  />
-                  <label
-                    htmlFor="Name"
-                    className="absolute left-4 -top-1 text-gray-500"
-                  >
-                    Name
-                  </label>
-                </div>
 
-                <div className="mb-6 relative">
+              {/* Email Field */}
+
+              {/* from  */}
+              <form className="space-y-6 p-6">
+                <div className="relative mb-6">
                   <input
                     type="mail"
                     id="mail"
                     name="mail"
-                    placeholder=""
-                    className="block w-full p-4 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent"
+                    placeholder=" "
+                    required
+                    className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
                   />
                   <label
                     htmlFor="mail"
-                    className="absolute left-4 -top-1 text-gray-500"
+                    className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
                   >
-                    Email
+                    From Email
                   </label>
                 </div>
 
-                <div className="mb-6 relative">
+                {/* to   */}
+                <div className="relative mb-6">
+                  <input
+                    type="mail"
+                    id="mail"
+                    name="mail"
+                    placeholder=" "
+                    required
+                    className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                  />
+                  <label
+                    htmlFor="mail"
+                    className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                  >
+                    To Email
+                  </label>
+                </div>
+
+                {/* Message Field */}
+                <div className="relative mb-6">
                   <textarea
                     id="message"
                     name="message"
-                    rows="4"
-                    placeholder="Your Message"
-                    className="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    rows="5"
+                    placeholder=" "
+                    required
+                    className="peer border rounded w-full pt-5 px-2 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
                   />
                   <label
                     htmlFor="message"
-                    className="absolute left-2 top-3.5 text-gray-500"
+                    className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
                   >
-                    {/* Your Message */}
+                    Your Message
                   </label>
                 </div>
               </form>
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-4 justify-between mt-4 p-4">
-                <button className="bg-black text-white px-4 py-4 font-bold rounded">
+                <button className="bg-black text-white px-4 py-4 font-bold rounded hover:opacity-85 transition duration-200">
                   Save Message
                 </button>
                 <button onClick={togglePopup} className="text-sm font-semibold">

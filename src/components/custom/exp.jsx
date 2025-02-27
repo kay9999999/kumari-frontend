@@ -1,95 +1,184 @@
-"use client";
+import { useEffect, useState } from "react";
+import { IoIosClose } from "react-icons/io";
+import styled from "styled-components";
 
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "@/redux/cartReducer";
+const OuterContainer = styled.div`
+  position: absolute;
+  top: 14%;
+  bottom: 2%;
+  width: 75%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: white;
+  @media (min-width: 640px) {
+    width: 60%;
+  }
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+  @media (min-width: 1024px) {
+    width: 40%;
+  }
+`;
 
-const Cart = () => {
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.products);
+const ScrollableContainer = styled.div`
+  max-height: 120vh;
+  overflow-y: auto;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  background: white;
 
-  // Calculate the subtotal price
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+`;
+
+const SharingBag = ({ onClose }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    let scrollY = 0;
+    if (isOpen) {
+      scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+    } else {
+      const top = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, top ? parseInt(top) * -1 : 0);
+    }
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+    };
+  }, [isOpen]);
+
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+    onClose();
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains("overlay")) {
+      togglePopup();
+    }
+  };
 
   return (
-    <div className="cart-container w-full max-w-[1040px] px-5 mx-auto">
-      <div className="bag mt-[76px] lg:mt-[84px] xl:mt-[92px]">
-        <div className="flex flex-col items-center py-20 px-5">
-          <h1 className="mb-2 text-[24px] md:text-[36px] text-[#1A1A1A]">
-            Review your bag.
-          </h1>
-          <div className="text-center font-semibold text-[14px] md:text-[15px] text-[#404040]">
-            Get free shipping and free returns on all orders.
-          </div>
-        </div>
-      </div>
-
-      {cartItems.length > 0 ? (
-        cartItems.map((item) => (
-          <div
-            key={item.sku}
-            className="bag-items w-full border-t border-[#e7e7e8] mb-5"
-          >
-            <div className="cart flex flex-col border-b border-[#e7e7e8] py-4">
-              <div className="bag-iteminfo flex flex-col md:flex-row">
-                <div className="bag-image w-[180px]">
-                  <img
-                    src={`${item?.image}`}
-                    alt={item?.title || "Product Image"}
-                    className="w-full object-cover"
-                  />
-                </div>
-                <div className="bag-content flex flex-col flex-1 ml-4 mt-4 md:mt-0">
-                  <div className="primary-info">
-                    <div className="item-details">
-                      <strong className="block break-words">
-                        {item.title}
-                      </strong>
-                      <p className="mt-1 text-sm text-gray-600">
-                        SKU: {item.sku}
-                      </p>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Metal: {item.metal}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Metal Color: {item.metalColor}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Carat: {item.diamondWeight}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Diamond Quality: {item.diamondQuality}
-                      </p>
-                      <p className="text-sm text-gray-600">Size: {item.size}</p>
-                    </div>
-                    <div className="qty-price flex justify-between mt-2">
-                      <div className="qty flex items-center text-sm">
-                        Quantity: {item.quantity || 1}
-                      </div>
-                      <div className="price text-right font-semibold text-sm">
-                        ₹{(item.price * (item.quantity || 1)).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="mt-2 text-red-500 underline text-sm"
-                    onClick={() => dispatch(removeItem(item.sku))}
-                  >
-                    Remove
-                  </button>
-                </div>
+    <>
+      {isOpen && (
+        <div
+          className="overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-20"
+          onClick={handleOverlayClick}
+        >
+          <OuterContainer>
+            <ScrollableContainer>
+              <div className="flex justify-between items-center bg-white py-2 px-3 sticky top-0 z-10">
+                <h2 className="md:text-xl text-[#1D1D1F]">
+                  Choose Sharing Option
+                </h2>
+                <button onClick={togglePopup}>
+                  <IoIosClose className="bg-gray-500 text-white rounded-full w-6 h-6 hover:bg-black focus:outline-none" />
+                </button>
               </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-center py-10">Your cart is empty.</p>
+
+              <div className="text-center mt-4">
+                <h2>Email</h2>
+                <form className="space-y-6 p-6">
+                  <div className="relative mb-6">
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder=" "
+                      required
+                      className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    />
+                    <label
+                      htmlFor="name"
+                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                    >
+                      Name
+                    </label>
+                  </div>
+                  <div className="relative mb-6">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      placeholder=" "
+                      required
+                      className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    />
+                    <label
+                      htmlFor="email"
+                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                    >
+                      Email
+                    </label>
+                  </div>
+                  <div className="relative mb-6">
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows="5"
+                      placeholder=" "
+                      required
+                      className="peer border rounded w-full pt-5 px-2 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    />
+                    <label
+                      htmlFor="message"
+                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                    >
+                      Your Message
+                    </label>
+                  </div>
+                </form>
+              </div>
+
+              <div className="flex flex-col gap-4 justify-between mt-4 p-4">
+                <button className="bg-black text-white px-4 py-4 font-bold rounded hover:opacity-85 transition duration-200">
+                  Share Bag
+                </button>
+                <button onClick={togglePopup} className="text-sm font-semibold">
+                  Cancel
+                </button>
+              </div>
+            </ScrollableContainer>
+          </OuterContainer>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default Cart;
+export default SharingBag;
