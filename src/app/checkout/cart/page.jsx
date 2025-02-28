@@ -18,7 +18,8 @@ const CartItemInfo = () => {
   const [zipCode, setZipCode] = useState('');
   const [showShippingDetails, setShowShippingDetails] = useState(false);
   const [isSharingFormOpen, setIsSharingFormOpen] = useState(false);
-  const [isPopupVisible, setIsPopupVisible] = useState(false); // Moved here
+  const [isPopupVisible, setIsPopupVisible] = useState(false); 
+  const [isCartRemoved, setIsCartRemoved] = useState(false);
 
   const toggleSharingForm = () => setIsSharingFormOpen(!isSharingFormOpen);
   const toggleSpecifications = () => setIsSpecVisible(!isSpecVisible);
@@ -29,17 +30,47 @@ const CartItemInfo = () => {
   const toggleShippingDetails = () => setShowShippingDetails(!showShippingDetails);
 
   const handleMoveToWishlist = () => {
-    console.log('Moved to Wishlist');
+    // console.log('Moved to Wishlist');
     togglePopup();
   };
 
   const handleRemoveItem = () => {
-    console.log('Item Removed');
-    togglePopup();
+    // console.log('Item Removed');
+    togglePopup(); 
+    setIsCartRemoved(true); 
   };
 
   return (
     <section className="mx-auto p-2">
+
+
+ {isCartRemoved ? (
+    <div className="flex flex-col items-center justify-center h-96 text-center border-b">
+        <h1 className="text-4xl font-semibold text-[#1A1A1A] mb-10">
+           Your bag is empty.
+         </h1>
+         <p className="text-[#404040] mb-8 text-xl">
+           Sign in to see if you have any saved items. Or continue shopping.
+         </p>
+   
+     <div className="flex gap-4 pt-6">
+          <Link href="/signin" passHref>
+             <button className="bg-black text-base text-white px-48 py-4 rounded hover:bg-gray-800 flex-1">
+               Sign In
+             </button>
+           </Link>
+   
+           <Link href="/home" passHref>
+             <button className="bg-[#E7E7E8] text-base text-[#404040] px-44 py-4 rounded hover:bg-gray-300 flex-1">
+               Continue Shopping
+             </button>
+           </Link>
+         </div>
+       </div>
+    ) : (
+
+      <>
+        {/* Header Section */}
       <div className="flex flex-col text-center justify-center mt-16 mb-10">
         <h1 className="text-4xl font-bold sm:text-4xl text-[#1A1A1A]">Review your bag.</h1>
         <p className="my-4 mx-auto leading-relaxed font-semibold lg:w-1/2 max-sm:w-full text-[#404040]">
@@ -315,7 +346,8 @@ const CartItemInfo = () => {
         </ul>
         {isSharingFormOpen && <SharingBag onClose={toggleSharingForm} />}
       </div>
-
+      </>
+    )}
       <div className="border-t my-6">
         <div className="flex flex-col mx-auto space-y-4 my-14 lg:w-3/4">
           <h2 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">Need more help?</h2>
@@ -332,8 +364,13 @@ const CartItemInfo = () => {
           </p>
         </div>
       </div>
+     
+      
     </section>
   );
 };
 
 export default CartItemInfo;
+
+
+
