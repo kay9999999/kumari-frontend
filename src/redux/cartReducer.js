@@ -10,7 +10,7 @@ export const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       const {
-        id,
+        sku,
         metal,
         metalColor,
 
@@ -21,7 +21,7 @@ export const cartSlice = createSlice({
       // Look for an existing cart item with the same id and variant selections.
       const existingIndex = state.products.findIndex(
         (item) =>
-          item.id === id &&
+          item.sku === sku &&
           item.metal === metal &&
           item.metalColor === metalColor &&
           item.diamondQuality === diamondQuality &&
@@ -41,6 +41,13 @@ export const cartSlice = createSlice({
         (item) => item.sku !== action.payload
       );
     },
+    updateQuantity: (state, action) => {
+      const { sku, quantity } = action.payload;
+      const item = state.products.find((item) => item.sku === sku);
+      if (item) {
+        item.quantity = Math.max(1, quantity); // Ensure quantity never drops below 1
+      }
+    },
     resetCart: (state) => {
       state.products = [];
     },
@@ -48,6 +55,7 @@ export const cartSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addToCart, removeItem, resetCart } = cartSlice.actions;
+export const { addToCart, removeItem, updateQuantity, resetCart } =
+  cartSlice.actions;
 
 export default cartSlice.reducer;

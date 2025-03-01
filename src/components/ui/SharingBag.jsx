@@ -1,6 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
 import styled from "styled-components";
+
+// const OuterContainer = styled.div`
+
+//   background: white;
+//   border-radius: 0.75rem;
+//   width: 90%;
+//   max-width: 900px;
+//   max-height: 90vh;
+//   position: absolute;
+//   top: 2%;
+//   bottom: 2%;
+//   display: flex;
+//   flex-direction: column;
+
+//   @media (min-width: 640px) {
+//     width: 80%;
+//   }
+//   @media (min-width: 1024px) {
+//     width: 70%;
+//   }
+// `;
 
 const OuterContainer = styled.div`
   position: absolute;
@@ -21,14 +42,19 @@ const OuterContainer = styled.div`
   }
 `;
 
+// const ScrollableContainer = styled.div`
+//   flex: 1;
+//   overflow-y: auto;
+// `;
+
 const ScrollableContainer = styled.div`
   max-height: 120vh;
   overflow-y: auto;
+  width:100%
   position: absolute;
   top: 0%;
   bottom: 0%;
   background: white;
-
   &::-webkit-scrollbar {
     width: 12px;
     height: 12px;
@@ -44,17 +70,22 @@ const ScrollableContainer = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
-
   scrollbar-width: thin;
   scrollbar-color: #888 #f1f1f1;
 `;
 
 const SharingBag = ({ onClose }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [activeForm, setActiveForm] = useState("email");
+
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains("overlay")) {
+      onClose();
+    }
+  };
 
   useEffect(() => {
     let scrollY = 0;
-    if (isOpen) {
+    if (activeForm) {
       scrollY = window.scrollY;
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
@@ -71,113 +102,275 @@ const SharingBag = ({ onClose }) => {
       document.body.style.top = "";
       document.body.style.width = "";
     };
-  }, [isOpen]);
+  }, [activeForm]);
 
-  const togglePopup = () => {
-    setIsOpen(!isOpen);
-    onClose();
+  const [formData, setFormData] = useState({
+    emailName: "",
+    email: "",
+    emailMessage: "",
+    urlName: "",
+    urlEmail: "",
+    whatsappName: "",
+    whatsappEmail: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleOverlayClick = (e) => {
-    if (e.target.classList.contains("overlay")) {
-      togglePopup();
+  const renderForm = () => {
+    switch (activeForm) {
+      case "email":
+        return (
+          <form className="space-y-4 p-4 sm:p-6">
+            <div className="mb-6 relative">
+              <input
+                type="text"
+                id="emailName"
+                name="emailName"
+                value={formData.emailName}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="emailName"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Name
+              </label>
+            </div>
+            <div className="mb-6 relative">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="email"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Email
+              </label>
+            </div>
+            <div className="mb-6 relative">
+              <textarea
+                id="emailMessage"
+                name="emailMessage"
+                value={formData.emailMessage}
+                onChange={handleInputChange}
+                rows="5"
+                placeholder=" "
+                className="peer border rounded w-full pt-5 px-2 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                required
+              />
+              <label
+                htmlFor="emailmessage"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                Your Message
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
+            >
+              Share via Email
+            </button>
+          </form>
+        );
+      case "url":
+        return (
+          <form className="space-y-4 p-4 sm:p-6">
+            <div className="mb-6 relative">
+              <input
+                type="text"
+                id="urlName"
+                name="urlName"
+                value={formData.urlName}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 outline-none border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="urlName"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Name
+              </label>
+            </div>
+            <div className="mb-6 relative">
+              <input
+                type="email"
+                id="urlEmail"
+                name="urlEmail"
+                value={formData.urlEmail}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 outline-none border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="urlEmail"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Email
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
+            >
+              Share via URL
+            </button>
+          </form>
+        );
+      case "whatsapp":
+        return (
+          <form className="space-y-4 p-4 sm:p-6">
+            <div className="mb-6 relative">
+              <input
+                type="text"
+                id="whatsappName"
+                name="whatsappName"
+                value={formData.whatsappName}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 outline-none border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="whatsappName"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Name
+              </label>
+            </div>
+            <div className="mb-6 relative">
+              <input
+                type="email"
+                id="whatsappEmail"
+                name="whatsappEmail"
+                value={formData.whatsappEmail}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 outline-none border rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="whatsappEmail"
+                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
+                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
+                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+              >
+                {" "}
+                Email
+              </label>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
+            >
+              Share via WhatsApp
+            </button>
+          </form>
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <>
-      {isOpen && (
-        <div
-          className="overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-20"
-          onClick={handleOverlayClick}
-        >
-          <OuterContainer>
-            <ScrollableContainer>
-              <div className="flex justify-between items-center bg-white py-2 px-3 sticky top-0 z-10">
-                <h2 className="md:text-xl text-[#1D1D1F]">
-                  Choose Sharing Option
-                </h2>
-                <button onClick={togglePopup}>
-                  <IoIosClose className="bg-gray-500 text-white rounded-full w-6 h-6 hover:bg-black focus:outline-none" />
-                </button>
-              </div>
+    <div>
+      <div
+        className="overlay fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-20"
+        onClick={handleOverlayClick}
+      >
+        <OuterContainer>
+          <ScrollableContainer>
+            <div className="flex justify-between items-center bg-white py-2 px-3 sticky top-0 z-10 border-b">
+              <h2 className="text-lg sm:text-xl text-[#1D1D1F]">
+                Choose Sharing Option
+              </h2>
+              <button onClick={onClose}>
+                <IoIosClose className="bg-gray-500 text-white rounded-full w-6 h-6 hover:bg-black focus:outline-none" />
+              </button>
+            </div>
 
-              <div className="text-center mt-4">
-                <h2>Email</h2>
-                <form className="space-y-6 p-6">
-                  <div className="relative mb-6">
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      placeholder=" "
-                      required
-                      className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
-                    />
-                    <label
-                      htmlFor="name"
-                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
-                    >
-                      Name
-                    </label>
-                  </div>
-                  <div className="relative mb-6">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      placeholder=" "
-                      required
-                      className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
-                    />
-                    <label
-                      htmlFor="email"
-                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
-                    >
-                      Email
-                    </label>
-                  </div>
-                  <div className="relative mb-6">
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows="5"
-                      placeholder=" "
-                      required
-                      className="peer border rounded w-full pt-5 px-2 text-gray-700 leading-tight focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
-                    />
-                    <label
-                      htmlFor="message"
-                      className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                       peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                       peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                       peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
-                    >
-                      Your Message
-                    </label>
-                  </div>
-                </form>
-              </div>
+            <div className="flex justify-around border-b p-2 mt-4">
+              <button
+                onClick={() => setActiveForm("email")}
+                className={`flex-1 text-center py-2 text-sm sm:text-base ${
+                  activeForm === "email"
+                    ? "font-bold border-b-2 border-black"
+                    : "text-gray-600 hover:text-black"
+                }`}
+              >
+                Email
+              </button>
+              <button
+                onClick={() => setActiveForm("url")}
+                className={`flex-1 text-center py-2 text-sm sm:text-base ${
+                  activeForm === "url"
+                    ? "font-bold border-b-2 border-black"
+                    : "text-gray-600 hover:text-black"
+                }`}
+              >
+                URL
+              </button>
+              <button
+                onClick={() => setActiveForm("whatsapp")}
+                className={`flex-1 text-center py-2 text-sm sm:text-base ${
+                  activeForm === "whatsapp"
+                    ? "font-bold border-b-2 border-black"
+                    : "text-gray-600 hover:text-black"
+                }`}
+              >
+                WhatsApp
+              </button>
+            </div>
 
-              <div className="flex flex-col gap-4 justify-between mt-4 p-4">
-                <button className="bg-black text-white px-4 py-4 font-bold rounded hover:opacity-85 transition duration-200">
-                  Share Bag
-                </button>
-                <button onClick={togglePopup} className="text-sm font-semibold">
-                  Cancel
-                </button>
-              </div>
-            </ScrollableContainer>
-          </OuterContainer>
-        </div>
-      )}
-    </>
+            {/* Form Section */}
+            {renderForm()}
+          </ScrollableContainer>
+        </OuterContainer>
+      </div>
+    </div>
   );
 };
 

@@ -12,28 +12,72 @@ import { BiSolidOffer } from "react-icons/bi";
 import { IoMdLock, IoIosClose } from "react-icons/io";
 import { MdIosShare } from "react-icons/md";
 import SharingBag from "@/components/ui/SharingBag";
-import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "@/redux/cartReducer";
+import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { removeItem, updateQuantity } from "@/redux/cartReducer";
+import { selectCartProducts } from "@/redux/selectors";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.products);
+  const cartItems = useSelector(selectCartProducts, shallowEqual);
 
-  const [isSpecVisible, setIsSpecVisible] = useState(false);
-  const [isDeliveryOption, setDeliveryOption] = useState(false);
+  const [isSpecVisible, setIsSpecVisible] = useState({});
+  const [isDeliveryOption, setDeliveryOption] = useState({});
   const [zipCode, setZipCode] = useState("");
   const [showShippingDetails, setShowShippingDetails] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isSharingBagOpen, setIsSharingBagOpen] = useState(false);
+  const [showTax, setShowTax] = useState(false);
+  const [coupon, setCoupon] = useState(null);
+  // Calculate the subtotal price
+  const Subtotal = cartItems.reduce((acc, item) => {
+    // Remove commas if needed and convert to number
+    const price = parseFloat(String(item.subtotal).replace(/,/g, "")) || 0;
+    const quantity = Number(item.quantity) || 0;
+    return acc + price * quantity;
+  }, 0);
+
+  const overallSubtotal = Subtotal.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  // If a coupon is applied, calculate discount and final total
+  const discountPercent = coupon ? coupon.discountPercent : 0;
+  const discountAmount = Subtotal * (discountPercent / 100);
+  const finalTotal = Subtotal - discountAmount;
+
+  // Calculate the Tax price
+  const estimatedTax = Subtotal * 0.03;
+  const Tax = estimatedTax.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const handleApplyCoupon = ({ code, discountPercent }) => {
+    setCoupon({ code, discountPercent });
+  };
+
+  // Handler to update quantity from the select dropdown.
+  const handleQuantityChange = (sku, newQuantity) => {
+    dispatch(updateQuantity({ sku, quantity: newQuantity }));
+  };
 
   const toggleSharingBag = () => {
     setIsSharingBagOpen(!isSharingBagOpen);
   };
-  const toggleSpecifications = () => {
-    setIsSpecVisible(!isSpecVisible);
+  const toggleSpecifications = (e, sku) => {
+    e.preventDefault();
+    setIsSpecVisible((prev) => ({
+      ...prev,
+      [sku]: !prev[sku],
+    }));
   };
-  const toggleDeliveryOption = () => {
-    setDeliveryOption(!isDeliveryOption);
+  const toggleDeliveryOption = (e, sku) => {
+    e.preventDefault();
+    setDeliveryOption((prev) => ({
+      ...prev,
+      [sku]: !prev[sku],
+    }));
   };
 
   const handleApply = () => {
@@ -59,6 +103,8 @@ const Cart = () => {
   const togglePopup = () => {
     setIsPopupVisible(!isPopupVisible);
   };
+
+  console.log(cartItems);
 
   return (
     <section>
@@ -109,7 +155,14 @@ const Cart = () => {
                         <select
                           id="cart-qty"
                           name="cart-qty"
-                          className="w-full h-10 px-3 border border-gray-300 rounded"
+                          value={item.quantity}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              item.sku,
+                              Number(e.target.value)
+                            )
+                          }
+                          className="w-full h-8 px-2 border border-gray-300 rounded"
                         >
                           {[...Array(10)].map((_, i) => (
                             <option key={i + 1} value={i + 1}>
@@ -120,7 +173,9 @@ const Cart = () => {
                       </div>
                       <div className="flex-1 text-right">
                         <span className="text-[#1A1A1A] text-[18px] md:text-xl font-semibold">
-                          {item.price}
+                          {`₹${parseFloat(
+                            item.finalPrice * item.quantity
+                          ).toLocaleString()}`}
                         </span>
                       </div>
                     </div>
@@ -130,21 +185,26 @@ const Cart = () => {
                   <div className="mt-4 relative">
                     <div className="flex justify-between items-start">
                       <div>
-                        <Link
-                          href="#"
+                        <button
                           className="flex items-center gap-1 text-base  cursor-pointer"
-                          onClick={toggleSpecifications}
+                          onClick={(e) => toggleSpecifications(e, item.sku)}
                         >
                           Specifications
-                          {isSpecVisible ? <FaChevronUp /> : <FaChevronDown />}
-                        </Link>
+                          {isSpecVisible[item.sku] ? (
+                            <FaChevronUp />
+                          ) : (
+                            <FaChevronDown />
+                          )}
+                        </button>
                       </div>
                     </div>
 
                     {/* Fixed height for the specifications section */}
                     <div
                       className={`spec-info mt-4 transition-all duration-500 ${
-                        isSpecVisible ? "max-h-40" : "max-h-0 overflow-hidden"
+                        isSpecVisible[item.sku]
+                          ? "max-h-40 opacity-100 transform translate-y-0"
+                          : "max-h-0 opacity-0 transform -translate-y-5 overflow-hidden"
                       }`}
                     >
                       <div className="space-y-2 text-[#404040] text-sm">
@@ -172,14 +232,13 @@ const Cart = () => {
 
                     {/* Remove Button */}
                     <div className="remove absolute top-0 right-0">
-                      <Link
-                        href="#"
+                      <button
                         className="flex items-center gap-1 text-base cursor-pointer"
                         onClick={togglePopup}
                       >
                         <RiDeleteBin6Line />
                         <span>Remove</span>
-                      </Link>
+                      </button>
                     </div>
                   </div>
 
@@ -191,54 +250,64 @@ const Cart = () => {
                       </div>
                       <div className="flex-1 ml-8 text-[#404040] text-sm">
                         <div className="font-semibold">Delivery:</div>
-                        <div className="mt-1">Ships in 1-3 weeks</div>
+
+                        <div className="mt-1">
+                          <span>{item.quantity} x</span> Ships in 1-3 weeks
+                        </div>
                         <div className="mt-1">
                           <div className="flex items-center">
-                            <Link
-                              href="#"
+                            <button
                               className="flex items-center gap-1"
-                              onClick={toggleDeliveryOption}
+                              onClick={(e) => toggleDeliveryOption(e, item.sku)}
                             >
                               Delivery option for :
                               <span className="text-black">
                                 {zipCode || ""}
                               </span>
-                              {isDeliveryOption ? (
+                              {isDeliveryOption[item.sku] ? (
                                 <FaChevronUp />
                               ) : (
                                 <FaChevronDown />
                               )}
-                            </Link>
+                            </button>
                           </div>
-                          {isDeliveryOption && (
-                            <div className="mb-6 relative w-full md:w-1/2">
-                              <form>
-                                <input
-                                  type="text"
-                                  id="ZipCode"
-                                  name="ZipCode"
-                                  value={zipCode}
-                                  onChange={(e) => setZipCode(e.target.value)}
-                                  placeholder=""
-                                  style={{ paddingTop: "20px" }}
-                                  className="block w-full p-4 border mt-2 rounded-lg  focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent pr-16"
-                                />
-                                <label
-                                  htmlFor="ZipCode"
-                                  className="absolute left-4 top-[1px] text-gray-400 text-sm"
-                                >
-                                  Zip Code
-                                </label>
-                                <button
-                                  type="button"
-                                  onClick={handleApply}
-                                  className="text-[#1A1A1A] absolute right-0 top-2 rounded-lg px-4 py-2 hover:underline cursor-pointer"
-                                >
-                                  Apply
-                                </button>
-                              </form>
-                            </div>
-                          )}
+                          <div
+                            className={`mt-4 transition-all duration-300 overflow-hidden ${
+                              isDeliveryOption[item.sku]
+                                ? " opacity-100 transform translate-y-0"
+                                : " opacity-0 transform -translate-y-5 "
+                            }`}
+                          >
+                            {isDeliveryOption[item.sku] && (
+                              <div className="mb-6 relative w-full md:w-1/2">
+                                <form>
+                                  <input
+                                    type="text"
+                                    id="ZipCode"
+                                    name="ZipCode"
+                                    value={zipCode}
+                                    onChange={(e) => setZipCode(e.target.value)}
+                                    placeholder=""
+                                    style={{ paddingTop: "20px" }}
+                                    className="block w-full p-4 border mt-2 rounded-lg  focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300 placeholder-transparent pr-16"
+                                  />
+                                  <label
+                                    htmlFor="ZipCode"
+                                    className="absolute left-4 top-[1px] text-gray-400 text-sm"
+                                  >
+                                    Zip Code
+                                  </label>
+                                  <button
+                                    type="button"
+                                    onClick={handleApply}
+                                    className="text-[#1A1A1A] absolute right-0 top-2 rounded-lg px-4 py-2 hover:underline cursor-pointer"
+                                  >
+                                    Apply
+                                  </button>
+                                </form>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -317,20 +386,50 @@ const Cart = () => {
             <div className=" flex justify-between items-center">
               <div>Subtotal</div>
               <div>
-                <span>₹48,328.26</span>
+                <span>₹{overallSubtotal}</span>
               </div>
             </div>
 
-            {/* CouponCode */}
-            <div className="flex justify-between items-center mt-2">
-              <div className="flex items-center gap-1">
-                <BiSolidOffer className="h-6 w-6" />
-                Have Coupon Code ?{" "}
-                <b>
-                  <CouponPopUp />
-                </b>
+            {/* Coupon Code Section */}
+            <div className="flex justify-between items-center mt-2 bg-white ">
+              <div className="flex items-center gap-2">
+                {coupon ? (
+                  <span className="text-sm   text-[#404040]">
+                    Coupon Applied :{" "}
+                    <strong className="text-[#808080] px-2 bg-slate-50 shadow py-1 rounded">
+                      {coupon.code}
+                    </strong>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setCoupon(null);
+                      }}
+                      className="px-2 py-1 text-red-600 rounded hover:bg-red-200"
+                    >
+                      Remove
+                    </button>
+                  </span>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-1">
+                      <BiSolidOffer className="h-6 w-6" />
+                      Have Coupon Code ?
+                      <b>
+                        <CouponPopUp onApplyCoupon={handleApplyCoupon} />
+                      </b>
+                    </div>
+                  </>
+                )}
               </div>
-              <span>couponamount</span>
+              <div className=" text-[#404040]">
+                ₹
+                {discountAmount.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </div>
             </div>
 
             {/* Shipping */}
@@ -347,10 +446,28 @@ const Cart = () => {
               <span>₹0</span>
             </div>
 
-            {/* Estimated Tax */}
-            <div className="flex justify-between items-center mt-2 border-b pb-6">
-              <div>Estimated Tax</div>
-              <span>₹1,449.85</span>
+            {/* Estimated Tax Section */}
+            <div className="mt-2 border-b pb-6">
+              <div className="flex justify-between items-center ">
+                <div className="flex items-center">
+                  <span>Estimated Tax</span>
+                  <button onClick={() => setShowTax(!showTax)} className="ml-1">
+                    {showTax ? (
+                      <FaChevronUp size={12} />
+                    ) : (
+                      <FaChevronDown size={12} />
+                    )}
+                  </button>
+                </div>
+                <span>₹{Tax}</span>
+              </div>
+
+              {showTax && (
+                <div className="flex justify-between items-center text-xs text-[#808080] mt-2 ml-2">
+                  <div>IGST (3%)</div>
+                  <span>₹{Tax}</span>
+                </div>
+              )}
             </div>
 
             {/* Total */}

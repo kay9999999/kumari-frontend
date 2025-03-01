@@ -301,7 +301,15 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    console.log("handleAddToCart called");
+    const rawFinalPrice =
+      (PriceData?.breakdown?.finalPrice &&
+        Number(PriceData.breakdown.finalPrice.toString().replace(/,/g, ""))) ||
+      0;
+
+    const rawsubtotalPrice =
+      (PriceData?.breakdown?.subtotal &&
+        Number(PriceData.breakdown.subtotal.toString().replace(/,/g, ""))) ||
+      0;
 
     // Build the cart item object with all required fields.
     const cartItem = {
@@ -314,7 +322,8 @@ const ProductPage = () => {
       diamondQuality: diamondQualitySelected,
       size: sizeSelected,
       sku: fullSKU,
-      price: PriceData?.breakdown?.finalPrice,
+      finalPrice: rawFinalPrice,
+      subtotal: rawsubtotalPrice,
       quantity: 1,
     };
 
@@ -696,14 +705,9 @@ const ProductPage = () => {
                     {sizes.map((size) => (
                       <div
                         key={size}
-                        className={`py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
+                        className={`flex-1 min-w-[18%] py-3 m-1 border text-center cursor-pointer rounded hover:outline hover:outline-gray-300 hover:outline-1 ${
                           size === sizeSelected ? "border-2 border-black" : ""
-                        } ${
-                          // Adjust width as needed; here we use full width for the last item
-                          size === sizes[sizes.length - 1]
-                            ? "w-full"
-                            : "w-[23%] "
-                        }`}
+                        } `}
                         onClick={() => handleSizeSelect(size)}
                       >
                         <span>{size}</span>
