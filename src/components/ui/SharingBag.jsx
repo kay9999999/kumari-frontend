@@ -2,27 +2,6 @@ import { useState, useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
 import styled from "styled-components";
 
-// const OuterContainer = styled.div`
-
-//   background: white;
-//   border-radius: 0.75rem;
-//   width: 90%;
-//   max-width: 900px;
-//   max-height: 90vh;
-//   position: absolute;
-//   top: 2%;
-//   bottom: 2%;
-//   display: flex;
-//   flex-direction: column;
-
-//   @media (min-width: 640px) {
-//     width: 80%;
-//   }
-//   @media (min-width: 1024px) {
-//     width: 70%;
-//   }
-// `;
-
 const OuterContainer = styled.div`
   position: absolute;
   top: 14%;
@@ -42,15 +21,10 @@ const OuterContainer = styled.div`
   }
 `;
 
-// const ScrollableContainer = styled.div`
-//   flex: 1;
-//   overflow-y: auto;
-// `;
-
 const ScrollableContainer = styled.div`
   max-height: 120vh;
   overflow-y: auto;
-  width:100%
+  width: 100%;
   position: absolute;
   top: 0%;
   bottom: 0%;
@@ -140,12 +114,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="emailName"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.emailName
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Name
               </label>
             </div>
@@ -162,12 +136,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="email"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.email
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Email
               </label>
             </div>
@@ -184,10 +158,11 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="emailmessage"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.emailMessage
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
                 Your Message
               </label>
@@ -216,12 +191,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="urlName"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.urlName
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Name
               </label>
             </div>
@@ -238,12 +213,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="urlEmail"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.urlEmail
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Email
               </label>
             </div>
@@ -271,12 +246,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="whatsappName"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.whatsappName
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Name
               </label>
             </div>
@@ -293,12 +268,12 @@ const SharingBag = ({ onClose }) => {
               />
               <label
                 htmlFor="whatsappEmail"
-                className="absolute left-4 top-4 text-gray-500 transition-all duration-300
-                 peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
-                 peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.whatsappEmail
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
               >
-                {" "}
                 Email
               </label>
             </div>
