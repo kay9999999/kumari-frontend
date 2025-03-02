@@ -79,9 +79,10 @@ const SharingBag = ({ onClose }) => {
   }, [activeForm]);
 
   const [formData, setFormData] = useState({
-    emailName: "",
-    email: "",
-    emailMessage: "",
+    recipientEmail: "",
+    yourName: "",
+    yourEmail: "",
+    message: "",
     urlName: "",
     urlEmail: "",
     whatsappName: "",
@@ -101,55 +102,84 @@ const SharingBag = ({ onClose }) => {
       case "email":
         return (
           <form className="space-y-4 p-4 sm:p-6">
-            <div className="mb-6 relative">
-              <input
-                type="text"
-                id="emailName"
-                name="emailName"
-                value={formData.emailName}
-                onChange={handleInputChange}
-                placeholder=" "
-                className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
-                required
-              />
-              <label
-                htmlFor="emailName"
-                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
-                  formData.emailName
-                    ? "top-0 left-2 text-sm -mt-0.5"
-                    : "top-4 left-4 text-base"
-                }`}
-              >
-                Name
-              </label>
-            </div>
+            {/* Recipient Email */}
             <div className="mb-6 relative">
               <input
                 type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                id="recipientEmail"
+                name="recipientEmail"
+                value={formData.recipientEmail}
                 onChange={handleInputChange}
                 placeholder=" "
                 className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
                 required
               />
               <label
-                htmlFor="email"
+                htmlFor="recipientEmail"
                 className={`absolute left-2 text-gray-500 transition-all duration-300 ${
-                  formData.email
+                  formData.recipientEmail
                     ? "top-0 left-2 text-sm -mt-0.5"
                     : "top-4 left-4 text-base"
                 }`}
               >
-                Email
+                Recipient Email
               </label>
             </div>
+
+            {/* Your Name */}
+            <div className="mb-6 relative">
+              <input
+                type="text"
+                id="yourName"
+                name="yourName"
+                value={formData.yourName}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="yourName"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.yourName
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
+              >
+                Your Name
+              </label>
+            </div>
+
+            {/* Your Email */}
+            <div className="mb-6 relative">
+              <input
+                type="email"
+                id="yourEmail"
+                name="yourEmail"
+                value={formData.yourEmail}
+                onChange={handleInputChange}
+                placeholder=" "
+                className="peer block w-full py-4 px-2 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500 placeholder-transparent"
+                required
+              />
+              <label
+                htmlFor="yourEmail"
+                className={`absolute left-2 text-gray-500 transition-all duration-300 ${
+                  formData.yourEmail
+                    ? "top-0 left-2 text-sm -mt-0.5"
+                    : "top-4 left-4 text-base"
+                }`}
+              >
+                Your Email
+              </label>
+            </div>
+
+            {/* Message */}
             <div className="mb-6 relative">
               <textarea
-                id="emailMessage"
-                name="emailMessage"
-                value={formData.emailMessage}
+                id="message"
+                name="message"
+                value={formData.message}
                 onChange={handleInputChange}
                 rows="5"
                 placeholder=" "
@@ -157,9 +187,9 @@ const SharingBag = ({ onClose }) => {
                 required
               />
               <label
-                htmlFor="emailmessage"
+                htmlFor="message"
                 className={`absolute left-2 text-gray-500 transition-all duration-300 ${
-                  formData.emailMessage
+                  formData.message
                     ? "top-0 left-2 text-sm -mt-0.5"
                     : "top-4 left-4 text-base"
                 }`}
@@ -167,6 +197,8 @@ const SharingBag = ({ onClose }) => {
                 Your Message
               </label>
             </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
@@ -226,7 +258,7 @@ const SharingBag = ({ onClose }) => {
               type="submit"
               className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
             >
-              Share via URL
+              Get Link
             </button>
           </form>
         );
@@ -281,7 +313,7 @@ const SharingBag = ({ onClose }) => {
               type="submit"
               className="w-full bg-black text-white px-4 py-3 rounded hover:opacity-85 transition duration-200"
             >
-              Share via WhatsApp
+              Share Bag
             </button>
           </form>
         );
@@ -298,8 +330,8 @@ const SharingBag = ({ onClose }) => {
       >
         <OuterContainer>
           <ScrollableContainer>
-            <div className="flex justify-between items-center bg-white py-2 px-3 sticky top-0 z-10 border-b">
-              <h2 className="text-lg sm:text-xl text-[#1D1D1F]">
+            <div className="flex justify-between items-center bg-white py-3 px-4 sticky top-0 z-10 border-b">
+              <h2 className="text-xl sm:text-xl text-[#1D1D1F]">
                 Choose Sharing Option
               </h2>
               <button onClick={onClose}>
