@@ -15,6 +15,7 @@ import SharingBag from "@/components/ui/SharingBag";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import { removeItem, updateQuantity } from "@/redux/cartReducer";
 import { selectCartProducts } from "@/redux/selectors";
+import { LinkedinIcon } from "lucide-react";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,6 @@ const Cart = () => {
   const [isDeliveryOption, setDeliveryOption] = useState({});
   const [zipCode, setZipCode] = useState("");
   const [showShippingDetails, setShowShippingDetails] = useState(false);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isSharingBagOpen, setIsSharingBagOpen] = useState(false);
   const [showTax, setShowTax] = useState(false);
   const [coupon, setCoupon] = useState(null);
@@ -133,12 +133,14 @@ const Cart = () => {
                     <div className="flex justify-center w-full md:w-[200px] min-h-px">
                       <span className="block relative w-1/2 md:w-full pb-[60%]">
                         <picture>
-                          <img
-                            className="absolute inset-0 object-cover"
-                            src={`${item?.image}`}
-                            alt={item?.title || "Product Image"}
-                            loading="lazy"
-                          />
+                          <Link href={`/${item?.slug}`}>
+                            <img
+                              className="absolute inset-0 object-cover"
+                              src={`${item?.image}`}
+                              alt={item?.title || "Product Image"}
+                              loading="lazy"
+                            />
+                          </Link>
                         </picture>
                       </span>
                     </div>
@@ -149,7 +151,7 @@ const Cart = () => {
                       <div className="flex max-md:flex-col">
                         <div className="flex-1 pr-4 w-full">
                           <strong className="text-[#4D4D4D] text-[18px] md:text-xl">
-                            <Link href="#">{item.title}</Link>
+                            <Link href={`/${item?.slug}`}>{item.title}</Link>
                           </strong>
                         </div>
 
@@ -213,25 +215,27 @@ const Cart = () => {
                         >
                           <div className="space-y-2 text-[#404040] text-sm">
                             <div>
-                              <span className="font-medium">SKU:</span>
+                              <span className="font-medium">SKU : </span>
                               {item.sku}
                             </div>
                             <div>
-                              <span className="font-medium">Metal:</span>
+                              <span className="font-medium">Metal : </span>
                               {item.metal}
                             </div>
                             <div>
-                              <span className="font-medium">Metal Color:</span>
+                              <span className="font-medium">
+                                Metal Color :{" "}
+                              </span>
                               {item.metalColor}
                             </div>
                             <div>
                               <span className="font-medium">
-                                Diamond Quality:
+                                Diamond Quality :
                               </span>{" "}
                               {item.diamondQuality}
                             </div>
                             <div>
-                              <span className="font-medium">Size:</span>{" "}
+                              <span className="font-medium">Size : </span>
                               {item.size}
                             </div>
                           </div>
@@ -443,13 +447,17 @@ const Cart = () => {
                       </>
                     )}
                   </div>
-                  <div className=" text-[#404040]">
-                    ₹
-                    {discountAmount.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </div>
+                  {coupon ? (
+                    <div className=" text-[#404040]">
+                      - ₹
+                      {discountAmount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
 
                 {/* Shipping */}
@@ -519,15 +527,15 @@ const Cart = () => {
             <div className="flex justify-center md:justify-end lg:w-3/4 mx-auto">
               <ul className="p-4 w-[440px]">
                 <li className="mt-4">
-                  <button
-                    type="button"
+                  <Link
+                    href="/checkout"
                     className="flex items-center justify-center w-full px-4 py-4 bg-black text-white rounded hover:opacity-85 transition duration-200 capitalize gap-1"
                   >
                     <IoMdLock className="w-5 h-5" />
                     <span className="text-lg text-center">
                       Proceed to Checkout
                     </span>
-                  </button>
+                  </Link>
                 </li>
 
                 <li className="mt-4">

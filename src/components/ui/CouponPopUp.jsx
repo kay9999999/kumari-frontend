@@ -43,15 +43,22 @@ const CouponPopUp = ({ onApplyCoupon }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (typeof onApplyCoupon !== "function") {
+      console.error("onApplyCoupon is not a function");
+      return;
+    }
+
     // Extract the numeric part from the coupon code
     const match = couponCode.match(/\d+/);
     if (match) {
       const discountPercent = parseFloat(match[0]);
       // Pass both the code and discount percentage back
+
       onApplyCoupon({ code: couponCode, discountPercent });
     }
-    setCouponCode(""); // clear the input field
-    togglePopup(); // close the popup
+    setCouponCode("");
+    togglePopup();
   };
 
   return (
@@ -62,11 +69,11 @@ const CouponPopUp = ({ onApplyCoupon }) => {
 
       {isOpen && (
         <div
-          className="fixed inset-0 flex  justify-center bg-black bg-opacity-90 overlay items-center" // Change to items-start
+          className="fixed inset-0 flex  items-center justify-center bg-black bg-opacity-80 backdrop-blur z-[1000] transition-opacity duration-300 ease-in-out"
           onClick={handleOverlayClick}
         >
-          <div className="relative bg-white rounded-xl w-11/12 sm:w-3/4 md:w-1/2 lg:p-5 p-3 ">
-            <div className="flex justify-between items-center mb-4 ">
+          <div className="relative bg-white rounded-xl w-[75%] lg:w-[50%] sm:w-[60%] lg:p-6 max-sm:p-4 max-md:p-4 md:p-4 transform transition-transform duration-300 ease-in-out scale-100 -translate-y-40">
+            <div className="flex justify-between items-center mb-10">
               <h2 className="text-xl sm:text-2xl text-[#1D1D1F]">
                 Apply Coupon
               </h2>
@@ -75,29 +82,24 @@ const CouponPopUp = ({ onApplyCoupon }) => {
               </button>
             </div>
             <div className="flex flex-col space-y-4 mt-8">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleSubmit(e);
-                }}
-                className="flex justify-between sm:flex-row items-center gap-4"
-              >
-                <input
-                  type="text"
-                  id="coupon"
-                  name="coupon"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter Coupon Code"
-                  className="relative w-full border p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 bg-black text-white rounded hover:opacity-85 transition duration-200"
-                >
-                  Apply
-                </button>
+              <form onSubmit={handleSubmit} className="relative w-full">
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="coupon"
+                    name="coupon"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    placeholder="Enter Coupon Code"
+                    className="w-full p-4 pr-20 border rounded-lg outline-none focus:border-pink-500 focus:ring focus:ring-pink-500"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1  rounded hover:bg-black hover:text-white"
+                  >
+                    Apply
+                  </button>
+                </div>
               </form>
             </div>
             <div className="flex items-center justify-center mt-8">

@@ -325,6 +325,7 @@ const ProductPage = () => {
       finalPrice: rawFinalPrice,
       subtotal: rawsubtotalPrice,
       quantity: 1,
+      slug: productSlug,
     };
 
     // Dispatch the action to update the Redux store.
