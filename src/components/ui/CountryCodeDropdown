@@ -1,111 +1,178 @@
-import { useState, useRef, useEffect } from 'react';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi'; 
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
-const CountryCodeDropdown = ({ value, onChange }) => {
+const CountryCodeDropdown = ({ value, onChange, hasError }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const options = [
-    { code: '+1', name: 'US', flag: 'https://flagcdn.com/w20/us.png' },
-    { code: '+44', name: 'UK', flag: 'https://flagcdn.com/w20/gb.png' },
-    { code: '+91', name: 'India', flag: 'https://flagcdn.com/w20/in.png' },
-    { code: '+61', name: 'Australia', flag: 'https://flagcdn.com/w20/au.png' },
-    { code: '+81', name: 'Japan', flag: 'https://flagcdn.com/w20/jp.png' },
+    { code: "+91", name: "India", flag: "https://flagcdn.com/w20/in.png" },
+    { code: "+1", name: "United States", flag: "https://flagcdn.com/w20/us.png" },
+    { code: "+93", name: "Afghanistan", flag: "https://flagcdn.com/w20/af.png" },
+    { code: "+355", name: "Albania", flag: "https://flagcdn.com/w20/al.png" },
+    { code: "+213", name: "Algeria", flag: "https://flagcdn.com/w20/dz.png" },
+    { code: "+376", name: "Andorra", flag: "https://flagcdn.com/w20/ad.png" },
+    { code: "+244", name: "Angola", flag: "https://flagcdn.com/w20/ao.png" },
+    { code: "+54", name: "Argentina", flag: "https://flagcdn.com/w20/ar.png" },
+    { code: "+374", name: "Armenia", flag: "https://flagcdn.com/w20/am.png" },
+    { code: "+61", name: "Australia", flag: "https://flagcdn.com/w20/au.png" },
+    { code: "+43", name: "Austria", flag: "https://flagcdn.com/w20/at.png" },
+    { code: "+994", name: "Azerbaijan", flag: "https://flagcdn.com/w20/az.png" },
+    { code: "+973", name: "Bahrain", flag: "https://flagcdn.com/w20/bh.png" },
+    { code: "+880", name: "Bangladesh", flag: "https://flagcdn.com/w20/bd.png" },
+    { code: "+375", name: "Belarus", flag: "https://flagcdn.com/w20/by.png" },
+    { code: "+32", name: "Belgium", flag: "https://flagcdn.com/w20/be.png" },
+    { code: "+501", name: "Belize", flag: "https://flagcdn.com/w20/bz.png" },
+    { code: "+229", name: "Benin", flag: "https://flagcdn.com/w20/bj.png" },
+    { code: "+591", name: "Bolivia", flag: "https://flagcdn.com/w20/bo.png" },
+    { code: "+387", name: "Bosnia and Herzegovina", flag: "https://flagcdn.com/w20/ba.png" },
+    { code: "+267", name: "Botswana", flag: "https://flagcdn.com/w20/bw.png" },
+    { code: "+55", name: "Brazil", flag: "https://flagcdn.com/w20/br.png" },
+    { code: "+359", name: "Bulgaria", flag: "https://flagcdn.com/w20/bg.png" },
+    { code: "+226", name: "Burkina Faso", flag: "https://flagcdn.com/w20/bf.png" },
+    { code: "+257", name: "Burundi", flag: "https://flagcdn.com/w20/bi.png" },
+    { code: "+855", name: "Cambodia", flag: "https://flagcdn.com/w20/kh.png" },
+    { code: "+237", name: "Cameroon", flag: "https://flagcdn.com/w20/cm.png" },
+    { code: "+1", name: "Canada", flag: "https://flagcdn.com/w20/ca.png" },
+    { code: "+86", name: "China", flag: "https://flagcdn.com/w20/cn.png" },
+    { code: "+57", name: "Colombia", flag: "https://flagcdn.com/w20/co.png" },
+    { code: "+506", name: "Costa Rica", flag: "https://flagcdn.com/w20/cr.png" },
+    { code: "+385", name: "Croatia", flag: "https://flagcdn.com/w20/hr.png" },
+    { code: "+53", name: "Cuba", flag: "https://flagcdn.com/w20/cu.png" },
+    { code: "+357", name: "Cyprus", flag: "https://flagcdn.com/w20/cy.png" },
+    { code: "+420", name: "Czech Republic", flag: "https://flagcdn.com/w20/cz.png" },
+    { code: "+45", name: "Denmark", flag: "https://flagcdn.com/w20/dk.png" },
+    { code: "+20", name: "Egypt", flag: "https://flagcdn.com/w20/eg.png" },
+    { code: "+33", name: "France", flag: "https://flagcdn.com/w20/fr.png" },
+    { code: "+49", name: "Germany", flag: "https://flagcdn.com/w20/de.png" },   
+    { code: "+62", name: "Indonesia", flag: "https://flagcdn.com/w20/id.png" },
+    { code: "+39", name: "Italy", flag: "https://flagcdn.com/w20/it.png" },
+    { code: "+81", name: "Japan", flag: "https://flagcdn.com/w20/jp.png" },
+    { code: "+234", name: "Nigeria", flag: "https://flagcdn.com/w20/ng.png" },
+    { code: "+64", name: "New Zealand", flag: "https://flagcdn.com/w20/nz.png" },
+    { code: "+92", name: "Pakistan", flag: "https://flagcdn.com/w20/pk.png" },
+    { code: "+51", name: "Peru", flag: "https://flagcdn.com/w20/pe.png" },
+    { code: "+63", name: "Philippines", flag: "https://flagcdn.com/w20/ph.png" },
+    { code: "+48", name: "Poland", flag: "https://flagcdn.com/w20/pl.png" },
+    { code: "+351", name: "Portugal", flag: "https://flagcdn.com/w20/pt.png" },
+    { code: "+7", name: "Russia", flag: "https://flagcdn.com/w20/ru.png" },
+    { code: "+966", name: "Saudi Arabia", flag: "https://flagcdn.com/w20/sa.png" },
+    { code: "+27", name: "South Africa", flag: "https://flagcdn.com/w20/za.png" },
+    { code: "+82", name: "South Korea", flag: "https://flagcdn.com/w20/kr.png" },
+    { code: "+34", name: "Spain", flag: "https://flagcdn.com/w20/es.png" },
+    { code: "+46", name: "Sweden", flag: "https://flagcdn.com/w20/se.png" },
+    { code: "+41", name: "Switzerland", flag: "https://flagcdn.com/w20/ch.png" },
+    { code: "+90", name: "Turkey", flag: "https://flagcdn.com/w20/tr.png" },
+    { code: "+971", name: "UAE", flag: "https://flagcdn.com/w20/ae.png" },
+    { code: "+44", name: "United Kingdom", flag: "https://flagcdn.com/w20/gb.png" },   
+    { code: "+58", name: "Venezuela", flag: "https://flagcdn.com/w20/ve.png" },
+    { code: "+84", name: "Vietnam", flag: "https://flagcdn.com/w20/vn.png" },
+    { code: "+263", name: "Zimbabwe", flag: "https://flagcdn.com/w20/zw.png" }
   ];
 
-  const selectedOption = options.find(opt => opt.code === value) || options[2];
-
+  const selectedOption = options.find((opt) => opt.code === value) || options[0];
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
+    const handleClickOutside = (e) => {
+      if (!dropdownRef.current?.contains(e.target)) setIsOpen(false);
     };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+  
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
   return (
-    <div ref={dropdownRef}>
-      <div
-        className="h-12 bg-gray-50 border-none rounded-l-lg px-2 flex items-center justify-between cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span>{selectedOption.code}</span>
-     
-        {isOpen ? (
-          <FiChevronUp className="w-5 h-5 text-gray-600" />
-        ) : (
-          <FiChevronDown className="w-5 h-5 text-gray-600" />
-        )}
-      </div>
+  <div ref={dropdownRef} className="w-[80px]">
+    <div className={`h-14 flex items-center justify-center cursor-pointer rounded-l-lg
+        ${hasError ? 'bg-pink-100' : 'bg-gray-50'}
+        ${hasError || isOpen ? 'border-4 border-pink-500' : 'border-none'}
+      `}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <span>{selectedOption.code}</span>
+      {isOpen ? (
+        <FiChevronUp className="w-5 h-5 text-gray-600" />
+      ) : (
+        <FiChevronDown className="w-5 h-5 text-gray-600" />
+      )}
+    </div>
       {isOpen && (
-        <div className=" top-12 left-0 bg-white border rounded-lg shadow-lg z-20 w-40">
-          {options.map(option => (
-            <div
-              key={option.code}
-              className="px-2 py-1 hover:bg-gray-100 cursor-pointer flex items-center"
-              onClick={() => {
-                onChange({ target: { name: 'countryCode', value: option.code } });
-                setIsOpen(false);
-              }}
-            >
-              <span className="mr-1">{option.code}</span>
-              <img src={option.flag} alt={option.name} className="w-5 h-5 mr-1" />
-              <span>({option.name})</span>
-            </div>
-          ))}
+        <div className="h-0 overflow-visible ">
+          <div 
+            className="bg-white border-4 border-pink-500 rounded shadow-lg transform translate-y-0 w-96 max-h-[200px] overflow-y-auto"
+          >
+            {options.map((option) => (
+              <div key={`${option.code}-${option.name}`}>
+                <div
+                  className="px-2 py-1 hover:bg-gray-100 cursor-pointer flex items-center"
+                  onClick={() => {
+                    onChange(option.code);
+                    setIsOpen(false);
+                  }}
+                >
+                <span className="w-12 flex-shrink-0 text-left">{option.code}</span>
+                <img 
+                  src={option.flag} 
+                  alt={option.name} 
+                  className="w-[20px] h-auto mx-2 flex-shrink-0"
+                />
+                <span className="flex-1 truncate">({option.name})</span>
+              </div>
+              {(option.code === "+1" || option.code === "+1") && (
+                <hr className="my-1 border-gray-300" />
+              )}</div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-const PhoneInput = () => {
-  const [formData, setFormData] = useState({
-    phone: '',
-    countryCode: '+91',
-  });
-  const [errors, setErrors] = useState({});
+const PhoneInput = ({ value, onChange, countryCode, onCountryCodeChange, hasError }) => {
+  const handlePhoneChange = (e) => {
+    onChange(e.target.value);
+  };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleCountryCodeChange = (newCode) => {
+    onCountryCodeChange(newCode);
   };
 
   return (
-    <div className=" flex items-center border rounded-lg group focus-within:border-pink-500 focus-within:ring focus-within:ring-pink-500">
-      <CountryCodeDropdown value={formData.countryCode} onChange={handleChange} />
-      <div className="flex-1 grid grid-rows-1 grid-cols-1">
+    <div
+      className={`grid grid-cols-[auto,1fr] items-center border rounded-lg group focus-within:border-pink-500 focus-within:ring focus-within:ring-pink-500 ${
+        hasError ? 'border-pink-500' : 'border-gray-300'
+      }`}
+    >
+      <CountryCodeDropdown 
+        value={countryCode} 
+        onChange={handleCountryCodeChange}
+        hasError={hasError}
+      />
+      <div className="grid grid-rows-1 grid-cols-1">
         <input
           type="tel"
           id="phone"
           name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          placeholder=""
-          className="peer row-start-1 col-start-1 w-full p-4 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500"
+          value={value}
+          onChange={handlePhoneChange}
+          placeholder=" "
+          className={`peer row-start-1 col-start-1 w-full p-4 border-none outline-none focus:ring focus:ring-pink-500 ${
+            hasError ? 'bg-pink-100' : ''
+          }`}
           required
         />
         <label
           htmlFor="phone"
-          className="row-start-1 col-start-1 text-gray-500 text-base transition-all duration-200 ease-in-out peer-placeholder-shown:text-base peer-placeholder-shown:pt-5 peer-focus:text-sm peer-focus:-translate-y-0 peer-focus:pt-0 peer-valid:text-sm peer-valid:pt-0 pl-4 pointer-events-none"
+          className={`row-start-1 col-start-1 text-gray-500 transition-all duration-200 ease-in-out peer-placeholder-shown:text-base peer-placeholder-shown:pt-5 peer-focus:text-sm peer-focus:-translate-y-0 peer-focus:pt-0 peer-valid:text-sm peer-valid:pt-0 ml-4 pointer-events-none`}
         >
           Phone Number
         </label>
-        {errors.phone && (
-          <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
-        )}
       </div>
     </div>
   );
 };
 
 export default PhoneInput;
+
