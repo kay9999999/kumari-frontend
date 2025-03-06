@@ -47,7 +47,7 @@ const CouponPopup = () => {
 
   return (
     <>
-      <button onClick={togglePopup} className="px-1 py-2 rounded">
+      <button onClick={togglePopup} className="px-1 py-2 rounded hover:underline cursor-pointer">
         Apply
       </button>
 
