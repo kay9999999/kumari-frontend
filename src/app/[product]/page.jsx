@@ -423,9 +423,9 @@ const ProductPage = () => {
         <Breadcrumbs product={product} />
       </div>
       {/* images and details section */}
-      <div className="flex flex-col lg:flex-row pt-2">
+      <div className="flex flex-col lg:flex-row pt-2 ">
         {/* Product Images - Mobile Carousel */}
-        <div className="lg:w-3/5 px-8">
+        <div className="lg:w-3/5 px-8  lg:sticky lg:top-0 lg:right-0 lg:h-full lg:overflow-y-auto">
           <div className="block lg:hidden">
             <Swiper
               key={swiperKey}
@@ -501,7 +501,7 @@ const ProductPage = () => {
         </div>
 
         {/* Product Description */}
-        <div className="lg:w-2/5 px-5 pt-5 lg:pt-0 mx-auto w-full max-w-[540px]">
+        <div className="lg:w-2/5 px-5 pt-5 lg:pt-0 mx-auto w-full max-w-[540px] lg:sticky lg:top-0 lg:right-0 lg:h-full lg:overflow-y-auto">
           <div className="mb-4">
             <h2 className="text-2xl lg:text-[28px] font-[500] mb-3 text-[#1A1A1A]">
               {mainProduct?.title}
@@ -1005,6 +1005,13 @@ const ProductPage = () => {
           </Link>
         </div>
       </div>
+      <style>{`
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+      `}</style>
     </section>
   );
 };
