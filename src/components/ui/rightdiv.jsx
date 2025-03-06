@@ -81,19 +81,20 @@ const RightDiv = () => {
 
         {/* Coupon Section */}
         <div className="p-4 w-full bg-[#fafafa]">
-          <div className="flex justify-between items-center bg-white mt-2 border p-3">
-            <div className="flex items-center gap-1 z-30">
-              <BiSolidOffer className="h-6 w-6" />
-              Have Coupon Code?{" "}
-              <b>
-                <CouponPopup isOpen={isOpen} togglePopup={togglePopup} />
-              </b>
-            </div>
-            <span>
-              <PiGreaterThan />
-            </span>
+              <div className="flex justify-between items-center bg-white mt-2 border p-3 cursor-pointer"
+                onClick={togglePopup}>
+                <div className="flex items-center gap-1 z-30">
+                  <BiSolidOffer className="h-6 w-6" />
+                  Have Coupon Code?{" "}
+                  <b>
+                    <CouponPopup isOpen={isOpen} togglePopup={togglePopup} />
+                  </b>
+                </div>
+                <button>
+                  <PiGreaterThan />
+                </button>
+              </div>
           </div>
-        </div>
 
         {/* Total Amount */}
         <div className="p-4 w-full bg-[#fafafa]">
