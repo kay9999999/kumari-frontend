@@ -8,6 +8,7 @@ import { TfiLocationPin } from "react-icons/tfi";
 import BlackStrip from "./BlackStrip";
 import Logo from "./Logo";
 import Navigation from "./Navigation";
+import ShoppingBagPopup from "../ui/ShoppingBagPopup";
 
 const Header = ({ data }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -140,7 +141,8 @@ const Header = ({ data }) => {
             />
             <GoSearch className="hidden lg:block text-gray-700 text-xl cursor-pointer hover:text-gray-600" />
             <SlHeart className="text-xl cursor-pointer hover:text-gray-600" />
-            <IoBagOutline className="text-xl cursor-pointer hover:text-gray-600" />
+            <ShoppingBagPopup />
+{/*             <IoBagOutline className="text-xl cursor-pointer hover:text-gray-600" /> */}
           </div>
         </div>
       </div>
