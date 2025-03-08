@@ -9,6 +9,8 @@ import BlackStrip from "./BlackStrip";
 import Logo from "./Logo";
 import Navigation from "./Navigation";
 import ShoppingBagPopup from "../ui/ShoppingBagPopup";
+import LocationPopup from "../ui/LocationPopup";
+import WishlistPopup from "../ui/WishlistPopup";
 
 const Header = ({ data }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -135,12 +137,9 @@ const Header = ({ data }) => {
               className="hidden lg:block h-10 w-10"
               title="Delivery"
             />
-            <TfiLocationPin
-              className="hidden lg:block text-gray-700 text-xl hover:text-gray-600 cursor-pointer"
-              title="Location"
-            />
+            <LocationPopup />
             <GoSearch className="hidden lg:block text-gray-700 text-xl cursor-pointer hover:text-gray-600" />
-            <SlHeart className="text-xl cursor-pointer hover:text-gray-600" />
+            <WishlistPopup />
             <ShoppingBagPopup />
 {/*             <IoBagOutline className="text-xl cursor-pointer hover:text-gray-600" /> */}
           </div>
