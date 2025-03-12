@@ -5,7 +5,7 @@ import { PiLessThan } from "react-icons/pi";
 import { useState } from 'react';
 import PhoneInput from '@/components/ui/CountryCodeDropdown';
 
-const page = () => {
+const NewAddress = () => {
 
 const [errors, setErrors] = useState({});
  const [formData, setFormData] = useState({
@@ -17,22 +17,26 @@ const [errors, setErrors] = useState({});
     address2: "",
     city: "",
     state: "",
-    postalCode: "",
     country: "",
    
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+  
+  
+   const handlePhoneChange = (value) => {
+     setPhone(value);
+   };
+  
+   const handleCountryCodeChange = (newCode) => {
+     setCountryCode(newCode);
+   };
 
-    if (name === "newPassword") {
-      validatePassword(value);
-    }
-  };
+   const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+};
 
   return (
     <section className="w-full my-24">
@@ -127,7 +131,11 @@ const [errors, setErrors] = useState({});
                       </div>
 
                       {/* Phone Number */}
-                      <PhoneInput />
+                      <PhoneInput value={phone}
+                onChange={handlePhoneChange}
+                countryCode={countryCode}
+                onCountryCodeChange={handleCountryCodeChange}
+                hasError={false} />
 
                       <div className="w-full md:w-1/2 lg:w-2/5">
                         <p className="text-lg mt-10 font-semibold text-[#4D4D4D]">Address</p>
@@ -254,12 +262,18 @@ const [errors, setErrors] = useState({});
                       {/* Postal Code */}
                       <div className="grid grid-rows-1 grid-cols-1">
                         <input
-                          type="number"
+                          type="text" 
                           id="postalCode"
                           name="postalCode"
                           value={formData.postalCode}
-                          onChange={handleChange}
+                          onChange={(e) => {
+                            // numbers only
+                            const value = e.target.value.replace(/\D/g, '');
+                            handleChange({ target: { name: 'postalCode', value } });
+                          }}
                           placeholder=" "
+                          pattern="[0-9]{6}"  // for 6-digit postal code
+                          maxLength={6}      // for restrict length
                           className="peer row-start-1 col-start-1 w-full p-4 border outline-none rounded-lg focus:border-pink-500 focus:ring focus:ring-pink-500"
                           required
                         />
@@ -301,4 +315,4 @@ const [errors, setErrors] = useState({});
   )
 }
 
-export default page
+export default NewAddress
