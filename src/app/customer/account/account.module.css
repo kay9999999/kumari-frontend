@@ -1,0 +1,18 @@
+#cardSlider {
+    padding-bottom: 50px; 
+}
+
+#cardSlider::-webkit-scrollbar {
+    height: 8px; 
+    width: 40px; 
+    margin-top: 10px; 
+}
+
+#cardSlider::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 5px; 
+}
+
+#cardSlider::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
