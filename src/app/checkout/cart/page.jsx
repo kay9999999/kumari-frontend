@@ -529,6 +529,8 @@ const Cart = () => {
                 <li className="mt-4">
                   <Link
                     href="/checkout"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center justify-center w-full px-4 py-4 bg-black text-white rounded hover:opacity-85 transition duration-200 capitalize gap-1"
                   >
                     <IoMdLock className="w-5 h-5" />

@@ -1,8 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header/Header";
 import { getGlobalPageData } from "@/data/loader";
-import Footer from "@/components/Footer/Footer";
+import { Providers } from "@/components/custom/providers";
 import StoreProvider from "@/redux/storeProvider";
 import HeaderFooterWrapper from "@/components/custom/HeaderFooterWrapper";
 
@@ -34,7 +33,9 @@ export default async function RootLayout({ children }) {
             headerData={globalData?.data?.header}
             footerData={globalData?.data?.footer}
           >
-            <main>{children}</main>
+            <Providers>
+              <main>{children}</main>
+            </Providers>
           </HeaderFooterWrapper>{" "}
           <div id="static-add-to-cart-container" />
         </StoreProvider>

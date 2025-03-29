@@ -40,17 +40,24 @@ import {
 import { getProductPageData } from "@/data/loader";
 import PriceBreakup from "@/components/custom/PriceBreakup";
 
+const isAtBottom = () => {
+  const scrollingElement = document.scrollingElement || document.body;
+  const scrollHeight = scrollingElement.scrollHeight;
+  const clientHeight = window.innerHeight;
+  return (
+    window.scrollY + clientHeight >= scrollHeight && scrollHeight > clientHeight
+  );
+};
+
 const ProductPage = () => {
   const params = useParams();
   const productSlug = params.product;
   const dispatch = useDispatch();
   const router = useRouter();
-
   const URL = getStrapiURL();
   const [productData, setProductData] = useState(null);
   const [FeedData, setFeedData] = useState(null);
   const [atBottom, setAtBottom] = useState(false);
-
   const [swiperKey, setSwiperKey] = useState(0);
   const [metalSelected, setmetalSelected] = useState("");
   const [metalColorSelected, setmetalColorSelected] = useState("");
@@ -355,6 +362,19 @@ const ProductPage = () => {
   }, []);
 
   // Fixed version of the add-to-cart bar
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setAtBottom(isAtBottom());
+    };
+    window.addEventListener("scroll", handleScroll);
+    // Initial check
+    setAtBottom(isAtBottom());
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const fixedAddToCart = (
     <div
       className={`fixed bottom-0 left-0 right-0 bg-white flex justify-center items-center z-20 lg:relative lg:mt-6 lg:bg-none lg:justify-start lg:z-0 py-2 lg:py-0 transition-opacity duration-300 ${

@@ -9,6 +9,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { FaChevronUp, FaChevronDown, FaChevronLeft } from "react-icons/fa";
 import { useSelector, shallowEqual } from "react-redux";
 import { selectCartProducts } from "@/redux/selectors";
+import { signOut, useSession } from "next-auth/react";
 
 const CheckoutPage = () => {
   const cartItems = useSelector(selectCartProducts, shallowEqual);
@@ -18,6 +19,7 @@ const CheckoutPage = () => {
   const [showOrderSummary, setShowOrderSummary] = useState(false);
   const [coupon, setCoupon] = useState(null);
 
+  const { data: session } = useSession();
   // Calculate the subtotal price
   const Subtotal = cartItems.reduce((acc, item) => {
     // Remove commas if needed and convert to number
@@ -479,6 +481,20 @@ const CheckoutPage = () => {
             </div>
             <div className="flex items-center text-sm">
               Have an account? <span className="font-semibold"> Login</span>
+            </div>
+            <div>
+              {session ? (
+                <button
+                  onClick={() =>
+                    signOut({ redirect: true, callbackUrl: "/auth/signin" })
+                  }
+                  className="bg-red-600 text-white py-2 px-4 rounded"
+                >
+                  Logout
+                </button>
+              ) : (
+                <p>You are not signed in.</p>
+              )}
             </div>
           </div>
 

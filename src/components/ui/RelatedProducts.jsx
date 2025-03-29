@@ -88,7 +88,7 @@ const RelatedProducts = ({ mainProduct }) => {
     sameCategory = shuffleArray(sameCategory);
     differentCategory = shuffleArray(differentCategory);
 
-    let numSameCategory = Math.floor(Math.random() * 11); // Between 0-10
+    let numSameCategory = Math.floor(Math.random() * 8); // Between 0-10
     let numDifferentCategory = 10 - numSameCategory;
 
     if (sameCategory.length < numSameCategory) {

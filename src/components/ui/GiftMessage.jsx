@@ -131,14 +131,14 @@ const GiftMessage = () => {
                     name="mail"
                     placeholder=" "
                     required
-                    className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    className="peer block w-full pt-5 pb-3 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
                   />
                   <label
                     htmlFor="mail"
                     className="absolute left-4 top-4 text-gray-500 transition-all duration-300
                  peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
                  peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm "
                   >
                     From Email
                   </label>
@@ -152,14 +152,14 @@ const GiftMessage = () => {
                     name="mail"
                     placeholder=" "
                     required
-                    className="peer block w-full py-4 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
+                    className="peer block w-full pt-5 pb-3 px-2 border rounded-lg focus:ring-2 focus:ring-[#e50068] focus:outline-none transition-all duration-300"
                   />
                   <label
                     htmlFor="mail"
                     className="absolute left-4 top-4 text-gray-500 transition-all duration-300
                  peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
                  peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm "
                   >
                     To Email
                   </label>
@@ -180,7 +180,7 @@ const GiftMessage = () => {
                     className="absolute left-4 top-4 text-gray-500 transition-all duration-300
                  peer-placeholder-shown:top-4 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base
                  peer-focus:top-0 peer-focus:left-2 peer-focus:text-sm
-                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm peer-focus:-mt-0.5 peer-valid:-mt-0.5"
+                 peer-valid:top-0 peer-valid:left-2 peer-valid:text-sm "
                   >
                     Your Message
                   </label>
